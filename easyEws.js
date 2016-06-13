@@ -373,3 +373,5 @@ function Dictionary(values) {
         return len;
     };
 };
+
+easyEws.initialize();
