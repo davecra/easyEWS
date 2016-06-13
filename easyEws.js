@@ -1,5 +1,5 @@
 /*!
- * easyEWS JavaScript Library v1.0.1
+ * easyEWS JavaScript Library v1.0.2
  * http://davecra.com
  *
  * Copyright David E. Craig and other contributors
