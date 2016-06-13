@@ -9,41 +9,41 @@
  * Date: 2016-04-18T19:14EST
  */
  
-// Creates a SOAP EWS wrapper
-function getSoapHeader(request) {
-    var result =
-        '<?xml version="1.0" encoding="utf-8"?>' +
-        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
-        '               xmlns:xsd="http://www.w3.org/2001/XMLSchema"' +
-        '               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-        '               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
-        '               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-        '   <soap:Header>' +
-        '       <RequestServerVersion Version="Exchange2013" xmlns="http://schemas.microsoft.com/exchange/services/2006/types" soap:mustUnderstand="0" />' +
-        '   </soap:Header>' +
-        '   <soap:Body>' + request + '</soap:Body>' +
-        '</soap:Envelope>';
-    return result;
-};
-
-// Makes an EWS callback with promise
-function asyncEws(soap, successCallback, errorCallback) {
-    Office.context.mailbox.makeEwsRequestAsync(soap, function (ewsResult) {
-        if (ewsResult.status == "succeeded") {
-            var xmlDoc = $.parseXML(ewsResult.value);
-            successCallback(xmlDoc); 
-        } else {
-            if (errorCallback != null)
-                errorCallback(ewsResult);
-        }
-    });
-};
-
 var easyEws = (function () {
     "use strict";
 
     var easyEws = {};
-    
+ 
+	// Creates a SOAP EWS wrapper
+	function getSoapHeader(request) {
+		var result =
+			'<?xml version="1.0" encoding="utf-8"?>' +
+			'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+			'               xmlns:xsd="http://www.w3.org/2001/XMLSchema"' +
+			'               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
+			'               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
+			'               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+			'   <soap:Header>' +
+			'       <RequestServerVersion Version="Exchange2013" xmlns="http://schemas.microsoft.com/exchange/services/2006/types" soap:mustUnderstand="0" />' +
+			'   </soap:Header>' +
+			'   <soap:Body>' + request + '</soap:Body>' +
+			'</soap:Envelope>';
+		return result;
+	};
+
+	// Makes an EWS callback with promise
+	function asyncEws(soap, successCallback, errorCallback) {
+		Office.context.mailbox.makeEwsRequestAsync(soap, function (ewsResult) {
+			if (ewsResult.status == "succeeded") {
+				var xmlDoc = $.parseXML(ewsResult.value);
+				successCallback(xmlDoc); 
+			} else {
+				if (errorCallback != null)
+					errorCallback(ewsResult);
+			}
+		});
+	};
+
     // PUBLIC: updates the x-headers in the mail item
     // RETUNS: 'succeeded' if call completed successfully
     // SEE: https://msdn.microsoft.com/en-us/library/office/dn596091(v=exchg.150).aspx
