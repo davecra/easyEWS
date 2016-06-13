@@ -124,7 +124,7 @@ var easyEws = (function () {
             '    <m:ItemIds>' + 
             '        <t:ItemId Id="' + mailItemId + '"/>' + 
             '    </m:ItemIds>' + 
-            '</GetItem>' + 
+            '</GetItem>';
         soap = getSoapHeader(soap); 
         // make the EWS call 
         asyncEws(soap, function (xmlDoc) { 
