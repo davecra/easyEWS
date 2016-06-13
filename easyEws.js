@@ -43,33 +43,7 @@ var easyEws = (function () {
             }
         });
     };
-
-    // PUBLIC: gets the mail item as mime content
-    // RETUNS: 'succeeded' if call completed successfully
-    easyEws.getMailItemMimeConent = function (mailItemId, successCallback, errorCallback) {
-        var soap =
-            '    <GetItem' +
-            '                xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-            '                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-            '      <ItemShape>' +
-            '        <t:BaseShape>IdOnly</t:BaseShape>' +
-            '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' +
-            '      </ItemShape>' +
-            '      <ItemIds>' +
-            '        <t:ItemId Id="' + mailItemId + '"/>' +
-            '      </ItemIds>' +
-            '    </GetItem>' +
-        
-        soap = getSoapHeader(soap);
-        // make the EWS call
-        asyncEws(soap, function (xmlDoc) {
-            successCallback("succeeded");
-        }, function (errorDetails) {
-            if (errorCallback != null)
-                errorCallback(errorDetails);
-        });
-    }
-
+    
     // PUBLIC: updates the x-headers in the mail item
     // RETUNS: 'succeeded' if call completed successfully
     // SEE: https://msdn.microsoft.com/en-us/library/office/dn596091(v=exchg.150).aspx
