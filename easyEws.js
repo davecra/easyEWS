@@ -116,7 +116,7 @@ var easyEws = (function () {
     // RETUNS: the entire email message as a MIME Base64 string 
     easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback) { 
         var soap = 
-            '<m:GetItem' + 
+            '<m:GetItem>' + 
             '    <m:ItemShape>' + 
             '        <t:BaseShape>IdOnly</t:BaseShape>' + 
             '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' + 
