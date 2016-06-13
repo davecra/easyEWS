@@ -116,17 +116,15 @@ var easyEws = (function () {
 48     // RETUNS: the entire email message as a MIME Base64 string 
 49     easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback) { 
 50         var soap = 
-51             '    <GetItem' + 
-52             '                xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' + 
-53             '                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' + 
-54             '      <ItemShape>' + 
+51             '<m:GetItem' + 
+54             '    <m:ItemShape>' + 
 55             '        <t:BaseShape>IdOnly</t:BaseShape>' + 
 56             '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' + 
-57             '      </ItemShape>' + 
-58             '      <ItemIds>' + 
+57             '    </m:ItemShape>' + 
+58             '    <m:ItemIds>' + 
 59             '        <t:ItemId Id="' + mailItemId + '"/>' + 
-60             '      </ItemIds>' + 
-61             '    </GetItem>' + 
+60             '    </m:ItemIds>' + 
+61             '</GetItem>' + 
 63         soap = getSoapHeader(soap); 
 64         // make the EWS call 
 65         asyncEws(soap, function (xmlDoc) { 
