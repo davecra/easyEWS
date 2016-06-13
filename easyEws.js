@@ -112,6 +112,33 @@ var easyEws = (function () {
         });
     }
 
+47     // PUBLIC: gets the mail item as raw MIME data
+48     // RETUNS: the entire email message as a MIME Base64 string 
+49     easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback) { 
+50         var soap = 
+51             '    <GetItem' + 
+52             '                xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' + 
+53             '                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' + 
+54             '      <ItemShape>' + 
+55             '        <t:BaseShape>IdOnly</t:BaseShape>' + 
+56             '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' + 
+57             '      </ItemShape>' + 
+58             '      <ItemIds>' + 
+59             '        <t:ItemId Id="' + mailItemId + '"/>' + 
+60             '      </ItemIds>' + 
+61             '    </GetItem>' + 
+63         soap = getSoapHeader(soap); 
+64         // make the EWS call 
+65         asyncEws(soap, function (xmlDoc) { 
+                var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent.toString();
+                successCallback(content);
+67         }, function (errorDetails) { 
+68              if (errorCallback != null) 
+69                 errorCallback(errorDetails); 
+70         }); 
+71     } 
+
+
     // PUBLIC:  gets the details for a specific item by ID
     // RETURNS: a Dictionary of key/value pairs for the mail item
     easyEws.getMailItem = function(ItemId, successCallback, errorCallback) {
