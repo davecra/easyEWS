@@ -44,7 +44,7 @@ var easyEws = (function () {
             /// <param name="debugCallback" type="Function">Debug callback - function(String) { }</param>
             Office.context.mailbox.makeEwsRequestAsync(soap, function (ewsResult) {
                 if (ewsResult.status == "succeeded") {
-                    var xmlDoc = $.parseXML(ewsResult.value); $.each()
+                    var xmlDoc = $.parseXML(ewsResult.value);
                     successCallback(xmlDoc);
                     debugCallback(ewsResult.value); // return raw result
                 } else {
