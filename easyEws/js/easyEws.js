@@ -182,8 +182,8 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make the EWS call 
             asyncEws(soap, function (xmlDoc) {
-                //var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent;
-                successCallback(xmlDoc);
+                var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent;
+                successCallback(content);
             }, function (errorDetails) {
                 if (errorCallback != null)
                     errorCallback(errorDetails);
