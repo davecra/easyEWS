@@ -1,13 +1,12 @@
 /*!
- * easyEWS JavaScript Library v1.0.4
+ * easyEWS JavaScript Library v1.0.5
  * http://davecra.com
- * https://raw.githubusercontent.com/davecra/easyEWS/master/easyEws/js/easyEws.js
- * 
+ *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2016-08-03T02:35EST
+ * Date: 2016-12-05T10:19EST
  */
 var easyEws = (function () {
     "use strict";
@@ -59,7 +58,8 @@ var easyEws = (function () {
         easyEws.updateEwsHeader = function (mailItemId, headerName, headerValue,
                                             successCallback, errorCallback, debugCallback) {
             /// <summary>
-            /// PUBLIC: Updates the x-headers in the mail item
+            /// PUBLIC: Updates the 
+            /// headers in the mail item
             /// SEE: https://msdn.microsoft.com/en-us/library/office/dn596091(v=exchg.150).aspx
             /// </summary>
             /// <param name="mailItemId" type="String">The id of the item to update</param>
@@ -96,94 +96,8 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make the EWS call
             asyncEws(soap, function (xmlDoc) {
-                successCallback("succeeded");
-            }, function (errorDetails) {
-                if (errorCallback != null)
-                    errorCallback(errorDetails);
-            }, function (debug) {
-                if (debugCallback != null)
-                    debugCallback(debug);
-            });
-        };
-
-        easyEws.sendPlainTextEmailWithAttachment = function (subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback) {
-            /// <summary>
-            /// PUBLIC: creates a new emails message with a single attachment and sends it
-            /// </summary>
-            /// <param name="subject" type="String">The subject for the message to be sent</param>
-            /// <param name="body" type="String">The body of the message to be sent</param>
-            /// <param name="to" type="String">The email address of the recipient</param>
-            /// <param name="attachmentName" type="String">Name of the attachment</param>
-            /// <param name="attachmentMime" type="String">MIME content in Base64 for the attachment</param>
-            /// <param name="successCallback" type="Function">Callback with 'success' if compelted successfully - function(string) { }</param>
-            /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
-            /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
-            var soap = '<m:CreateItem MessageDisposition="SendAndSaveCopy">' +
-                       '    <m:Items>' +
-                       '        <t:Message>' +
-                       '            <t:Subject>' + subject + '</t:Subject>' +
-                       '            <t:Body BodyType="Text">' + body + '</t:Body>' +
-                       '            <t:Attachments>' +
-                       '                <t:ItemAttachment>' +
-                       '                    <t:Name>' + attachmentName + '</t:Name>' +
-                       '                    <t:IsInline>false</t:IsInline>' +
-                       '                    <t:Message>' +
-                       '                        <t:MimeContent CharacterSet="UTF-8">' + attachmentMime + '</t:MimeContent>' +
-                       '                    </t:Message>' +
-                       '                </t:ItemAttachment>' +
-                       '            </t:Attachments>' +
-                       '            <t:ToRecipients><t:Mailbox><t:EmailAddress>' + to + '</t:EmailAddress></t:Mailbox></t:ToRecipients>' +
-                       '        </t:Message>' +
-                       '    </m:Items>' +
-                       '</m:CreateItem>';
-
-            soap = getSoapHeader(soap);
-
-            // make the EWS call 
-            asyncEws(soap, function (xmlDoc) {
-                // Get the required response, and if it's NoError then all has succeeded, so tell the user.
-                // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
-                // entered incorrectly --- try it and see for yourself what happens!!)
-                var result = xmlDoc.getElementsByTagName("ResponseCode")[0].textContent;
-                if (result == "NoError") {
-                    successCallback(result);
-                }
-                else {
-                    if (errorCallback != null)
-                        errorCallback(result);
-                }
-            }, function (errorDetails) {
-                if (errorCallback != null)
-                    errorCallback(errorDetails);
-            }, function (debug) {
-                if (debugCallback != null)
-                    debugCallback(debug);
-            });
-        };
-
-        easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback, debugCallback) {
-            /// <summary>
-            /// PUBLIC: gets the mail item as raw MIME data
-            /// </summary>
-            /// <param name="mailItemId" type="type"></param>
-            /// <param name="successCallback" type="Function">Callback with email message as MIME Base64 string - function(string) { } </param>
-            /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
-            /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
-            var soap =
-                '<m:GetItem>' +
-                '    <m:ItemShape>' +
-                '        <t:BaseShape>IdOnly</t:BaseShape>' +
-                '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' +
-                '    </m:ItemShape>' +
-                '    <m:ItemIds>' +
-                '        <t:ItemId Id="' + mailItemId + '"/>' +
-                '    </m:ItemIds>' +
-                '</m:GetItem>';
-            soap = getSoapHeader(soap);
-            // make the EWS call 
-            asyncEws(soap, function (xmlDoc) {
-                var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent;
-                successCallback(content);
+                if (successCallback)
+                    successCallback("succeeded");
             }, function (errorDetails) {
                 if (errorCallback != null)
                     errorCallback(errorDetails);
@@ -217,7 +131,11 @@ var easyEws = (function () {
 
             // call ews
             asyncEws(soap, function (xmlDoc) {
-                $.each(xmlDoc.getElementsByTagName("t:ItemId"), function (index, value) {
+                var nodes = xmlDoc.getElementsByTagName("t:ItemId");
+                if (nodes == null || nodes.length == 0) {
+                    nodes = xmlDoc.getElementsByTagName("ItemId");
+                }
+                $.each(nodes, function (index, value) {
                     returnArray.push(value.getAttribute("Id"));
                 });
                 successCallback(returnArray);
@@ -284,7 +202,10 @@ var easyEws = (function () {
             // make the EWS call
             var returnArray = [];
             asyncEws(soap, function (xmlDoc) {
-                var extendedProps = xmlDoc.getElementsByTagName("EmailAddress");
+                var extendedProps = xmlDoc.getElementsByTagName("t:EmailAddress");
+                if (extendedProps == null || extendedProps.length == 0) {
+                    extendedProps = xmlDoc.getElementsByTagName("EmailAddress");
+                }
                 $.each(extendedProps, function (index, value) {
                     returnArray.push(value);
                 });
@@ -336,11 +257,22 @@ var easyEws = (function () {
             asyncEws(soap, function (xmlDoc) {
                 var returnArray = [];
                 try {
-                    if (xmlDoc == null || xmlDoc.getElementsByTagName("ItemId").length == 0) {
-                        if (errorCallback != null)
-                            errorCallback(new Error("Invalid XML returned from the server"));
+                    var xmlNodes = null;
+                    if (xmlDoc == null) {
+                        if (errorCallback != null) {
+                            errorCallback(new Error("The XML returned from the server could not be parsed."));
+                        }
+                    } else if (xmlDoc.getElementsByTagName("t:ItemId").length == 0 &&
+                               xmlDoc.getElementsByTagName("ItemId").length == 0) {
+                        if (errorCallback != null) {
+                            errorCallback(new Error("The XML returned does not contain results."));
+                        }
                     } else {
-                        $.each(xmlDoc.getElementsByTagName("ItemId"), function (index, value) {
+                        var nodes = xmlDoc.getElementsByTagName("t:ItemId");
+                        if (nodes == null || nodes.length == 0) {
+                            nodes = xmlDoc.getElementsByTagName("ItemId");
+                        }
+                        $.each(nodes, function (index, value) {
                             returnArray.push(value.getAttribute("Id"));
                         });
                         successCallback(returnArray);
@@ -383,7 +315,11 @@ var easyEws = (function () {
             var returnArray = new Dictionary();
             asyncEws(soap, function (xmlDoc) {
                 try {
-                    $.each(xmlDoc.getElementsByTagName("InternetMessageHeader"), function (index, value) {
+                    var nodes = xmlDoc.getElementsByTagName("t:InternetMessageHeader");
+                    if (nodes == null || nodes.length == 0) {
+                        nodes = xmlDoc.getElementsByTagName("InternetMessageHeader");
+                    }
+                    $.each(nodes, function (index, value) {
                         returnArray.add(value.getAttribute("HeaderName"), value.textContent);
                     });
                     successCallback(returnArray);
@@ -479,7 +415,11 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make the EWS call
             asyncEws(soap, function (xmlDoc) {
-                successCallback(xmlDoc.getElementsByTagName("t:Value")[0].textContent);
+                var nodes = xmlDoc.getElementsByTagName("t:Value");
+                if (nodes == null || nodes.length == 0) {
+                    nodes = xmlDoc.getElementsByTagName("Value");
+                }
+                successCallback(nodes[0].textContent);
             }, function (error) {
                 if (errorCallback != null)
                     errorCallback(error);
@@ -509,7 +449,11 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make EWS callback
             asyncEws(soap, function (xmlDoc) {
-                var id = xmlDoc.getElementsByTagName("t:FolderId")[0].getAttribute("Id");
+                var nodes = xmlDoc.getElementsByTagName("t:FolderId");
+                if (nodes == null || nodes.length == 0) {
+                    nodes = xmlDoc.getElementsByTagName("FolderId");
+                }
+                var id = nodes[0].getAttribute("Id");
                 successCallback(id);
             }, function (errorDetails) {
                 if (errorCallback != null)
