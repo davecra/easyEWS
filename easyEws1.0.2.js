@@ -8,11 +8,16 @@
  *
  * Date: 2016-04-18T19:14EST
  */
+<<<<<<< HEAD:easyEws.js
  
+=======
+
+>>>>>>> origin/master:easyEws1.0.2.js
 var easyEws = (function () {
     "use strict";
 
     var easyEws = {};
+<<<<<<< HEAD:easyEws.js
  
 	// Creates a SOAP EWS wrapper
 	function getSoapHeader(request) {
@@ -43,6 +48,38 @@ var easyEws = (function () {
 			}
 		});
 	};
+=======
+
+    // Creates a SOAP EWS wrapper
+    function getSoapHeader(request) {
+        var result =
+            '<?xml version="1.0" encoding="utf-8"?>' +
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+            '               xmlns:xsd="http://www.w3.org/2001/XMLSchema"' +
+            '               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
+            '               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
+            '               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+            '   <soap:Header>' +
+            '       <RequestServerVersion Version="Exchange2013" xmlns="http://schemas.microsoft.com/exchange/services/2006/types" soap:mustUnderstand="0" />' +
+            '   </soap:Header>' +
+            '   <soap:Body>' + request + '</soap:Body>' +
+            '</soap:Envelope>';
+        return result;
+    };
+
+    // Makes an EWS callback with promise
+    function asyncEws(soap, successCallback, errorCallback) {
+        Office.context.mailbox.makeEwsRequestAsync(soap, function (ewsResult) {
+            if (ewsResult.status == "succeeded") {
+                var xmlDoc = $.parseXML(ewsResult.value);
+                successCallback(xmlDoc.getElementsByTagName("MimeContent")[0].textContent);
+            } else {
+                if (errorCallback != null)
+                    errorCallback(ewsResult);
+            }
+        });
+    };
+>>>>>>> origin/master:easyEws1.0.2.js
 
     // PUBLIC: updates the x-headers in the mail item
     // RETUNS: 'succeeded' if call completed successfully
@@ -110,36 +147,77 @@ var easyEws = (function () {
                 errorCallback(errorDetails);
             }
         });
-    }
+    };
+
+    // PUBLIC: creates a new emails message with a single attachment and sends it
+    // RETURNS: 'success' is compelted successfully 
+    easyEws.sendPlainTextEmailWithAttachment = function (subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback) {
+        var soap = '<m:CreateItem MessageDisposition="SendAndSaveCopy">' +
+                   '    <m:Items>' +
+                   '        <t:Message>' +
+                   '            <t:Subject>' + subject + '</t:Subject>' +
+                   '            <t:Body BodyType="Text">' + body + '</t:Body>' +
+                   '            <t:Attachments>' +
+                   '                <t:ItemAttachment>' +
+                   '                    <t:Name>' + attachmentName + '</t:Name>' +
+                   '                    <t:IsInline>false</t:IsInline>' +
+                   '                    <t:Message>' +
+                   '                        <t:MimeContent CharacterSet="UTF-8">' + attachmentMime + '</t:MimeContent>' +
+                   '                    </t:Message>' +
+                   '                </t:ItemAttachment>' +
+                   '            </t:Attachments>' +
+                   '            <t:ToRecipients><t:Mailbox><t:EmailAddress>' + to + '</t:EmailAddress></t:Mailbox></t:ToRecipients>' +
+                   '        </t:Message>' +
+                   '    </m:Items>' +
+                   '</m:CreateItem>';
+
+        soap = getSoapHeader(soap);
+
+        // make the EWS call 
+        asyncEws(soap, function (xmlDoc) {
+            // Get the required response, and if it's NoError then all has succeeded, so tell the user.
+            // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
+            // entered incorrectly --- try it and see for yourself what happens!!)
+            var result = xmlDoc.getElementsByTagName("ResponseCode")[0].textContent;
+            if (result == "NoError") {
+                successCallback(result);
+            }
+            else {
+                successCallback("The following error code was recieved: " + result);
+            }
+        }, function (errorDetails) {
+            if (errorCallback != null)
+                errorCallback(errorDetails);
+        });
+    };
 
     // PUBLIC: gets the mail item as raw MIME data
-    // RETUNS: the entire email message as a MIME Base64 string 
-    easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback) { 
-        var soap = 
-            '<m:GetItem>' + 
-            '    <m:ItemShape>' + 
-            '        <t:BaseShape>IdOnly</t:BaseShape>' + 
-            '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' + 
-            '    </m:ItemShape>' + 
-            '    <m:ItemIds>' + 
-            '        <t:ItemId Id="' + mailItemId + '"/>' + 
-            '    </m:ItemIds>' + 
-            '</GetItem>' + 
-        soap = getSoapHeader(soap); 
+    // RETURNS: the entire email message as a MIME Base64 string 
+    easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback) {
+        var soap =
+            '<m:GetItem>' +
+            '    <m:ItemShape>' +
+            '        <t:BaseShape>IdOnly</t:BaseShape>' +
+            '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' +
+            '    </m:ItemShape>' +
+            '    <m:ItemIds>' +
+            '        <t:ItemId Id="' + mailItemId + '"/>' +
+            '    </m:ItemIds>' +
+            '</m:GetItem>';
+        soap = getSoapHeader(soap);
         // make the EWS call 
-        asyncEws(soap, function (xmlDoc) { 
-        var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent.toString();
-            successCallback(content);
-        }, function (errorDetails) { 
-            if (errorCallback != null) 
-                errorCallback(errorDetails); 
-        }); 
-    } 
-
+        asyncEws(soap, function (xmlDoc) {
+            //var content = xmlDoc.getElementsByTagName("MimeContent")[0].textContent;
+            successCallback(xmlDoc);
+        }, function (errorDetails) {
+            if (errorCallback != null)
+                errorCallback(errorDetails);
+        });
+    };
 
     // PUBLIC:  gets the details for a specific item by ID
     // RETURNS: a Dictionary of key/value pairs for the mail item
-    easyEws.getMailItem = function(ItemId, successCallback, errorCallback) {
+    easyEws.getMailItem = function (ItemId, successCallback, errorCallback) {
         var soap =
             '<m:GetItem>' +
             '   <m:ItemShape>' +
@@ -156,11 +234,11 @@ var easyEws = (function () {
             var item = new MailItem(xmlDoc);
             successCallback(item);
         }, function (errorDetails) {
-            if(errorCallback != null) {
+            if (errorCallback != null) {
                 errorCallback(errorDetails);
             }
         });
-    }
+    };
 
     // PUBLIC:  expand a group and returns all the members
     // NOTE:    does not enumerate groups in groups
@@ -245,7 +323,7 @@ var easyEws = (function () {
 
         soap = getSoapHeader(soap);
         // Make the EWS call
-        var returnArray = new Dictionary(); 
+        var returnArray = new Dictionary();
         asyncEws(soap, function (xmlDoc) {
             for (var item in xmlDoc.getElementsByTagName("t:InternetMessageHeader")) {
                 returnArray.add(item.getAttribute("HeaderName"), item.textContent);
@@ -289,7 +367,7 @@ var easyEws = (function () {
         soap = getSoapHeader(soap);
         // make the EWS call
         asyncEws(soap, successCallback, errorCallback);
-    }
+    };
 
     // PUBLIC: gets a folder property
     // RETURNS: property value if process completed successfully
@@ -312,10 +390,10 @@ var easyEws = (function () {
             '</m:GetFolder>';
         soap = getSoapHeader(soap);
         // make the EWS call
-        asyncEws(soap, function(xmlDoc) {
+        asyncEws(soap, function (xmlDoc) {
             successCallback(xmlDoc.getElementsByTagName("t:Value")[0].textContent);
         }, errorCallback);
-    }
+    };
 
     // PUBLIC: Gets the folder id by the given name from the store
     // RETURNS: a string with ID of the folder
@@ -338,10 +416,10 @@ var easyEws = (function () {
             if (errorCallback != null)
                 errorCallback(errorDetails);
         });
-    }
-    
+    };
+
     return easyEws;
-    
+
 })();
 
 /* HELPER FUNCTIONS AND CLASSES */
