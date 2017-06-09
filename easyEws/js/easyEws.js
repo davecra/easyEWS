@@ -1,12 +1,12 @@
 /*!
- * easyEWS JavaScript Library v1.0.5
- * http://davecra.com
+ * easyEWS JavaScript Library v1.0.6
+ * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2016-12-05T10:19EST
+ * Date: 2017-06-08T08:30EST
  */
 var easyEws = (function () {
     "use strict";
@@ -18,6 +18,7 @@ var easyEws = (function () {
         /// PRIVATE: creates a SOAP EWS wrapper
         /// </summary>
         function getSoapHeader(request) {
+            /** @type {string} */
             var result =
                 '<?xml version="1.0" encoding="utf-8"?>' +
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
@@ -43,15 +44,138 @@ var easyEws = (function () {
             /// <param name="debugCallback" type="Function">Debug callback - function(String) { }</param>
             Office.context.mailbox.makeEwsRequestAsync(soap, function (ewsResult) {
                 if (ewsResult.status == "succeeded") {
-                    var xmlDoc = $.parseXML(ewsResult.value);
+                    /** @type {XMLDocument} */
+                    var xmlDoc = $.parseXML(ewsResult.value);                   
                     successCallback(xmlDoc);
-                    debugCallback(ewsResult.value); // return raw result
+
+                    // provide a detailed debug with the initial soap, fully formed
+                    // and the response from the server
+                    debugCallback("STATUS: " + ewsResult.status + "\n" +
+                                  "---- START SOAP ----\n" + soap + "\n---- END SOAP ----\n" +
+                                  "---- START RESPONSE ----\n" + ewsResult.value + "---- END RESPONSE ----"); // return raw result
                 } else {
                     if (errorCallback != null) {
-                        errorCallback("makeEwsRequestAsync failed.");
-                        debugCallback(ewsResult.value); // return raw result
+                        errorCallback("makeEwsRequestAsync failed. " + ewsResult.error);
+                        debugCallback("STATUS: " + ewsResult.status + "\n" +
+                                      "ERROR: " + ewsResult.error + "\n" +
+                                      "---- START SOAP ----\n" + soap + "\n---- END SOAP ----\n" +
+                                      "---- START RESPONSE ----\n" + ewsResult.value + "---- END RESPONSE ----"); // return raw result
                     }
                 }
+            }); 
+        };
+
+        function getNodes(node, elementNameWithNS) {
+            /// <summary>
+            /// PRIVATE: This function returns an element node list based on the name
+            ///          provided (using the Namespace, such as t:Item). It will look
+            ///          for t:Item and return all nodes, but it not, it will seach
+            ///          without the namespace "Item"
+            /// NOTE: This is done because there is a difference in calling EWS functions
+            ///       from the browser in OWA and the full client Outlook
+            /// </summary>
+            /// <param name="node" type="type"></param>
+            /// <param name="elementNameWithNS" type="type"></param>
+            /// <returns type=""></returns>
+            /** @type {string} */
+            var elementWithoutNS = elementNameWithNS.substring(elementNameWithNS.indexOf(":") + 1);
+            /** @type {array} */
+            var retVal = node.getElementsByTagName(elementNameWithNS);
+            if (retVal == null || retVal.length == 0) {
+                retVal = node.getElementsByTagName(elementWithoutNS);
+            }
+            return retVal;
+        }
+
+        easyEws.sendPlainTextEmailWithAttachment = function (subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback) {
+            /// <summary>
+            /// PUBLIC: creates a new emails message with a single attachment and sends it
+            /// </summary>
+            /// <param name="subject" type="String">The subject for the message to be sent</param>
+            /// <param name="body" type="String">The body of the message to be sent</param>
+            /// <param name="to" type="String">The email address of the recipient</param>
+            /// <param name="attachmentName" type="String">Name of the attachment</param>
+            /// <param name="attachmentMime" type="String">MIME content in Base64 for the attachment</param>
+            /// <param name="successCallback" type="Function">Callback with 'success' if compelted successfully - function(string) { }</param>
+            /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
+            /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
+            var soap = '<m:CreateItem MessageDisposition="SendAndSaveCopy">' +
+                       '    <m:Items>' +
+                       '        <t:Message>' +
+                       '            <t:Subject>' + subject + '</t:Subject>' +
+                       '            <t:Body BodyType="Text">' + body + '</t:Body>' +
+                       '            <t:Attachments>' +
+                       '                <t:ItemAttachment>' +
+                       '                    <t:Name>' + attachmentName + '</t:Name>' +
+                       '                    <t:IsInline>false</t:IsInline>' +
+                       '                    <t:Message>' +
+                       '                        <t:MimeContent CharacterSet="UTF-8">' + attachmentMime + '</t:MimeContent>' +
+                       '                    </t:Message>' +
+                       '                </t:ItemAttachment>' +
+                       '            </t:Attachments>' +
+                       '            <t:ToRecipients><t:Mailbox><t:EmailAddress>' + to + '</t:EmailAddress></t:Mailbox></t:ToRecipients>' +
+                       '        </t:Message>' +
+                       '    </m:Items>' +
+                       '</m:CreateItem>';
+
+            soap = getSoapHeader(soap);
+
+            // make the EWS call 
+            asyncEws(soap, function (xmlDoc) {
+                // Get the required response, and if it's NoError then all has succeeded, so tell the user.
+                // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
+                // entered incorrectly --- try it and see for yourself what happens!!)
+                /** @type {string} */
+                var result = xmlDoc.getElementsByTagName("ResponseCode")[0].textContent;
+                if (result == "NoError") {
+                    successCallback(result);
+                }
+                else {
+                    if (errorCallback != null)
+                        errorCallback(result);
+                }
+            }, function (errorDetails) {
+                if (errorCallback != null)
+                    errorCallback(errorDetails);
+            }, function (debug) {
+                if (debugCallback != null)
+                    debugCallback(debug);
+            });
+        };
+
+        easyEws.getMailItemMimeContent = function (mailItemId, successCallback, errorCallback, debugCallback) {
+            /// <summary>
+            /// PUBLIC: gets the mail item as raw MIME data
+            /// </summary>
+            /// <param name="mailItemId" type="type"></param>
+            /// <param name="successCallback" type="Function">Callback with email message as MIME Base64 string - function(string) { } </param>
+            /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
+            /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
+            var soap =
+                '<m:GetItem>' +
+                '    <m:ItemShape>' +
+                '        <t:BaseShape>IdOnly</t:BaseShape>' +
+                '        <t:IncludeMimeContent>true</t:IncludeMimeContent>' +
+                '    </m:ItemShape>' +
+                '    <m:ItemIds>' +
+                '        <t:ItemId Id="' + mailItemId + '"/>' +
+                '    </m:ItemIds>' +
+                '</m:GetItem>';
+            soap = getSoapHeader(soap);
+            // make the EWS call 
+            asyncEws(soap, function (xmlDoc) {
+                /** @type {array} */
+                var nodes = getNodes("t:MimeContent");
+                /** @type {string} */
+                var content = nodes[0].textContent;successCallback(xmlDoc);
+            }, function (errorDetails) {
+                if (errorCallback != null)
+                    errorCallback(errorDetails);
+            }, function (debug) {
+                if (debugCallback != null)
+                    debugCallback(debug);
             });
         };
 
@@ -68,6 +192,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">returns 'succeeeded' is successful - function(String) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '<m:UpdateItem MessageDisposition="SaveOnly" ConflictResolution="AlwaysOverwrite">' +
                 '   <m:ItemChanges>' +
@@ -107,7 +232,6 @@ var easyEws = (function () {
             });
         };
 
-
         easyEws.getFolderItemIds = function (folderId, successCallback, errorCallback, debugCallback) {
             /// <summary>
             /// PUBLIC:  Returns a list of items in the folder
@@ -116,6 +240,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with array of item IDs - function(String[]) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '<m:FindItem Traversal="Shallow">' +
                 '   <m:ItemShape> ' +
@@ -125,16 +250,17 @@ var easyEws = (function () {
                 '       <t:FolderId Id="' + folderId + '"/>' +
                 '   </m:ParentFolderIds>' +
                 '</m:FindItem>';
-
+   
+            /** @type {array} */
             var returnArray = [];
+
             soap = getSoapHeader(soap);
 
             // call ews
             asyncEws(soap, function (xmlDoc) {
-                var nodes = xmlDoc.getElementsByTagName("t:ItemId");
-                if (nodes == null || nodes.length == 0) {
-                    nodes = xmlDoc.getElementsByTagName("ItemId");
-                }
+                /** @type {array} */
+                var nodes = getNodes(xmlDoc, "t:ItemId");
+                // loop through and return an array of ids
                 $.each(nodes, function (index, value) {
                     returnArray.push(value.getAttribute("Id"));
                 });
@@ -148,8 +274,7 @@ var easyEws = (function () {
                     debugCallback(debug);
             });
         }
-
-
+        
         easyEws.getMailItem = function (ItemId, successCallback, errorCallback, debugCallback) {
             /// <summary>
             /// PUBLIC:  Gets the item details for a specific item by ID
@@ -158,6 +283,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with the details of the MailItem - function(MailItem) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '<m:GetItem>' +
                 '   <m:ItemShape>' +
@@ -171,10 +297,11 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make call to EWS
             asyncEws(soap, function (xmlDoc) {
+                /** @type {MailItem} */
                 var item = new MailItem(xmlDoc);
                 successCallback(item);
             }, function (errorDetails) {
-                if (errorCallback != null) {
+                if(errorCallback != null) {
                     errorCallback(errorDetails);
                 }
             }, function (debug) {
@@ -192,6 +319,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with an array of aliases - function(String[]) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '<m:ExpandDL>' +
                 '    <m:Mailbox>' +
@@ -200,12 +328,12 @@ var easyEws = (function () {
                 '</m:ExpandDL>';
             soap = getSoapHeader(soap);
             // make the EWS call
+            /** @type {array} */
             var returnArray = [];
             asyncEws(soap, function (xmlDoc) {
-                var extendedProps = xmlDoc.getElementsByTagName("t:EmailAddress");
-                if (extendedProps == null || extendedProps.length == 0) {
-                    extendedProps = xmlDoc.getElementsByTagName("EmailAddress");
-                }
+                /** @type {array} */
+                var extendedProps = getNodes(xmlDoc, "t:EmailAddress");
+                // loop through and return an array of properties
                 $.each(extendedProps, function (index, value) {
                     returnArray.push(value);
                 });
@@ -232,6 +360,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with an array of ids - function(String[]) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '       <m:GetConversationItems>' +
                 '           <m:ItemShape>' +
@@ -255,23 +384,19 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // Make EWS call
             asyncEws(soap, function (xmlDoc) {
+                /** @type {array} */
                 var returnArray = [];
                 try {
-                    var xmlNodes = null;
-                    if (xmlDoc == null) {
+                    /** @type {array} */
+                    var nodes = getNodes(xmlDoc, "t:ItemId");
+                    if (nodes == null) {
                         if (errorCallback != null) {
                             errorCallback(new Error("The XML returned from the server could not be parsed."));
                         }
-                    } else if (xmlDoc.getElementsByTagName("t:ItemId").length == 0 &&
-                               xmlDoc.getElementsByTagName("ItemId").length == 0) {
-                        if (errorCallback != null) {
-                            errorCallback(new Error("The XML returned does not contain results."));
-                        }
+                    } else if (nodes.length == 0) {
+                        successCallback(null);
                     } else {
-                        var nodes = xmlDoc.getElementsByTagName("t:ItemId");
-                        if (nodes == null || nodes.length == 0) {
-                            nodes = xmlDoc.getElementsByTagName("ItemId");
-                        }
+                        // loop through and return an array of ids
                         $.each(nodes, function (index, value) {
                             returnArray.push(value.getAttribute("Id"));
                         });
@@ -290,6 +415,66 @@ var easyEws = (function () {
             });
         };
 
+        easyEws.getSpecificHeader = function (itemId, headerName, headerType, successCallback, errorCallback, debugCallback) {
+            /// <summary>
+            /// PUBLIC: Gets a specific Internet header for a spific item
+            /// NOTE: https://msdn.microsoft.com/en-us/library/office/aa566013(v=exchg.150).aspx
+            /// </summary>
+            /// <param name="itemId" type="String">The item ID to get</param>
+            /// <param name="headerName" type="String">The header to get</param>
+            /// <param name="headerType" type="String">The header type (String, Integer)</param>
+            /// <param name="successCallback" type="Function">Callback with a Dictionary(key,value) containing the message headers - function(Dictionary) { }</param>
+            /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
+            /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
+            var soap =
+            '   <m:GetItem>' +
+            '       <m:ItemShape>' +
+            '           <t:BaseShape>IdOnly</t:BaseShape>' +
+            '           <t:AdditionalProperties>' +
+            '               <t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="' + headerName + '" PropertyType="' + headerType + '" />' +
+            '           </t:AdditionalProperties>' +
+            '       </m:ItemShape>' +
+            '       <m:ItemIds>' +
+            '           <t:ItemId Id="' + itemId + '" />' +
+            '       </m:ItemIds>' +
+            '   </m:GetItem>';
+
+            soap = getSoapHeader(soap);
+            // Make the EWS call
+            /** @type {string} */
+            var returnValue = "";
+            asyncEws(soap, function (xmlDoc) {
+                try {
+                    if (xmlDoc == null) {
+                        successCallback(null);
+                        return;
+                    }
+                    /** @type {array} */
+                    var nodes = getNodes(xmlDoc, "t:ExtendedProperty");
+                    $.each(nodes, function (index, value) {
+                        /** @type {string} */
+                        var nodeName = getNodes(value, "t:ExtendedFieldURI")[0].getAttribute("PropertyName");
+                        /** @type {string} */
+                        var nodeValue = getNodes(value, "t:Value")[0].textContent;
+                        if (nodeName == headerName) {
+                            returnValue = nodeValue;
+                        }
+                    });
+                    successCallback(returnValue);
+                } catch (error) {
+                    if (errorCallback != null)
+                        errorCallback(error);
+                }
+            }, function (errorDetails) {
+                if (errorCallback != null)
+                    errorCallback(errorDetails);
+            }, function (debug) {
+                if (debugCallback != null)
+                    debugCallback(debug);
+            });
+        }
+
         easyEws.getEwsHeaders = function (itemId, successCallback, errorCallback, debugCallback) {
             /// <summary>
             /// PUBLIC: Gets Internet headers for a spific item
@@ -299,6 +484,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with a Dictionary(key,value) containing the message headers - function(Dictionary) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
             '   <m:GetItem>' +
             '       <m:ItemShape>' +
@@ -309,16 +495,18 @@ var easyEws = (function () {
             '           <t:ItemId Id="' + itemId + '" />' +
             '       </m:ItemIds>' +
             '   </m:GetItem>';
-
             soap = getSoapHeader(soap);
             // Make the EWS call
+            /** @type {Dictionary} */
             var returnArray = new Dictionary();
             asyncEws(soap, function (xmlDoc) {
                 try {
-                    var nodes = xmlDoc.getElementsByTagName("t:InternetMessageHeader");
-                    if (nodes == null || nodes.length == 0) {
-                        nodes = xmlDoc.getElementsByTagName("InternetMessageHeader");
+                    if (xmlDoc == null) {
+                        successCallback(null);
+                        return;
                     }
+                    /** @type {array} */
+                    var nodes = getNodes(xmlDoc, "t:InternetMessageHeader");
                     $.each(nodes, function (index, value) {
                         returnArray.add(value.getAttribute("HeaderName"), value.textContent);
                     });
@@ -346,6 +534,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with the string 'succeeeded' if successful - function(String) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '       <m:UpdateFolder>' +
                 '           <m:FolderChanges>' +
@@ -374,8 +563,8 @@ var easyEws = (function () {
 
             soap = getSoapHeader(soap);
             // make the EWS call
-            asyncEws(soap, function (data) {
-                if (successCallback != null)
+            asyncEws(soap, function(data) {
+                if(successCallback != null)
                     successCallback('succeeeded');
             }, function (error) {
                 if (errorCallback != null)
@@ -386,8 +575,6 @@ var easyEws = (function () {
             });
         }
 
-        // 
-        // RETURNS: property value if process completed successfully
         easyEws.getFolderProperty = function (folderId, propName, successCallback, errorCallback, debugCallback) {
             /// <summary>
             /// PUBLIC: Gets a folder property
@@ -397,6 +584,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with the string value of the property - function(String) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '<m:GetFolder>' +
                     '<m:FolderShape>' +
@@ -415,11 +603,14 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make the EWS call
             asyncEws(soap, function (xmlDoc) {
-                var nodes = xmlDoc.getElementsByTagName("t:Value");
-                if (nodes == null || nodes.length == 0) {
-                    nodes = xmlDoc.getElementsByTagName("Value");
+                /** @type {array} */
+                var nodes = getNodes(xmlDoc, "t:Value");
+                // return the content of the node
+                if (nodes.length > 0) {
+                    successCallback(nodes[0].textContent);
+                } else {
+                    successCallback(null); // no property found
                 }
-                successCallback(nodes[0].textContent);
             }, function (error) {
                 if (errorCallback != null)
                     errorCallback(error);
@@ -437,6 +628,7 @@ var easyEws = (function () {
             /// <param name="successCallback" type="Function">Callback with the folder ID - function(String) { }</param>
             /// <param name="errorCallback" type="Function">Error handler callback - function(Error) { }</param>
             /// <param name="debugCallback" type="Function">Debug handler returns raw XML - function(String) { }</param>
+            /** @type {string} */
             var soap =
                 '    <m:GetFolder>' +
                 '      <m:FolderShape>' +
@@ -449,12 +641,15 @@ var easyEws = (function () {
             soap = getSoapHeader(soap);
             // make EWS callback
             asyncEws(soap, function (xmlDoc) {
-                var nodes = xmlDoc.getElementsByTagName("t:FolderId");
-                if (nodes == null || nodes.length == 0) {
-                    nodes = xmlDoc.getElementsByTagName("FolderId");
+                /** @type {array} */
+                var nodes = getNodes(xmlDoc, "t:FolderId");
+                if (nodes.length > 0) {
+                    /** @type {string} */
+                    var id = nodes[0].getAttribute("Id");
+                    successCallback(id);
+                } else {
+                    errorCallback("Unable to get folder ID");
                 }
-                var id = nodes[0].getAttribute("Id");
-                successCallback(id);
             }, function (errorDetails) {
                 if (errorCallback != null)
                     errorCallback(errorDetails);
@@ -478,23 +673,43 @@ easyEws.initialize();    // initialize the class
 
 /* HELPER FUNCTIONS AND CLASSES */
 function MailItem(value) {
-
+    /// <summary>
+    /// Mail Item wrapper
+    /// </summary>
+    /// <param name="value" type="xml">XML from an EWS Request</param>
     this.value = value || {};
 
     MailItem.prototype.MimeContent = function () {
+        /// <summary>
+        /// Returns the MimeContent of the message
+        /// </summary>
+        /// <returns type="string">Base64 string</returns>
         return this.value.getElementsByTagName("t:MimeContent")[0].textContent;
     };
 
     MailItem.prototype.MimeContent.CharacterSet = function () {
+        /// <summary>
+        /// Returns the mime content character set
+        /// </summary>
+        /// <returns type="string">Character set value</returns>
         return this.value.getElementsByTagName("t:MimeContent")[0].getAttribute("CharacterSet");
     };
 
     MailItem.prototype.Subject = function () {
+        /// <summary>
+        /// Returns the subject of the message
+        /// </summary>
+        /// <returns type="string">Subject line</returns>
         return this.value.getElementsByTagName("t:Subject")[0].textContent;
     };
 }
 
 function Dictionary(values) {
+    /// <summary>
+    /// Dictionary Object Class
+    /// Helps to work with items in a dictionary with key value pairs
+    /// </summary>
+    /// <param name="values" type="array">Array of values</param>
     this.values = values || {};
 
     var forEachIn = function (object, action) {
@@ -505,23 +720,47 @@ function Dictionary(values) {
     };
 
     Dictionary.prototype.containsKey = function (key) {
+        /// <summary>
+        /// Returns true if it contains the specified key
+        /// </summary>
+        /// <param name="key" type="string"></param>
+        /// <returns type="boolean">True if key exists in collection</returns>
         return Object.prototype.hasOwnProperty.call(this.values, key) &&
           Object.prototype.propertyIsEnumerable.call(this.values, key);
     };
 
     Dictionary.prototype.forEach = function (action) {
+        /// <summary>
+        /// For each function for the Disctionary
+        /// </summary>
+        /// <param name="action" type="type"></param>
         forEachIn(this.values, action);
     };
 
     Dictionary.prototype.lookup = function (key) {
+        /// <summary>
+        /// Returns the value for the specified key
+        /// </summary>
+        /// <param name="key" type="string">The key to find</param>
+        /// <returns type="">The value found</returns>
         return this.values[key];
     };
 
     Dictionary.prototype.add = function (key, value) {
+        /// <summary>
+        /// Adds a new item to the Dictionary collection
+        /// </summary>
+        /// <param name="key" type="string">The key name</param>
+        /// <param name="value" type="">The value</param>
         this.values[key] = value;
     };
 
     Dictionary.prototype.length = function () {
+        /// <summary>
+        /// Returns the length of the array, or number of items
+        /// </summary>
+        /// <returns type="number">The number of items in the array</returns>
+        /** @type {number} */
         var len = 0;
         forEachIn(this.values, function () { len++ });
         return len;
