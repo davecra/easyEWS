@@ -10,13 +10,13 @@ npm -install easyews
 ```
 
 ### Follow
-Please follow my blog for the latest developments on OfficeJS.dialogs. You can find my blog here:
+Please follow my blog for the latest developments on easyEws. You can find my blog here:
 
 ![LOGO](https://davecra.files.wordpress.com/2017/07/blog-icon-large.png?w=20) http://theofficecontext.com
 
 You can use this link to narrow the results only to those posts which relate to this library:
 
-* https://theofficecontext.com/?s=officejs.dialogs
+* https://theofficecontext.com/?s=easyews
   
 ![TWITTER](https://davecra.files.wordpress.com/2010/10/tlogo.png?w=20) You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
 
