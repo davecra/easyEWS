@@ -10,17 +10,17 @@ npm -install easyews
 ```
 
 ### Follow
-Please follow my blog for the latest developments on easyEws. You can find my blog here:
+Please follow my blog for the latest developments on OfficeJS.dialogs. You can find my blog here:
 
-* http://theofficecontext.com
+![LOGO](https://davecra.files.wordpress.com/2017/07/blog-icon-large.png?w=20) http://theofficecontext.com
 
 You can use this link to narrow the results only to those posts which relate to this library:
 
-* https://theofficecontext.com/?s=easyews
+* https://theofficecontext.com/?s=officejs.dialogs
   
-You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
+![TWITTER](https://davecra.files.wordpress.com/2010/10/tlogo.png?w=20) You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
 
-And also on LinkedIn: [davidcr](https://www.linkedin.com/in/davidcr/)
+![LINKEDIN](https://davecra.files.wordpress.com/2014/02/inbug-60px-r.png?w=20) And also on LinkedIn: [davidcr](https://www.linkedin.com/in/davidcr/)
 
 # Usage
 This section is TDB, [please see my blog](https://theofficecontext.com/2016/04/18/easyews-js-for-outlook-add-ins/) for details for now.
