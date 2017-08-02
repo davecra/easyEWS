@@ -27,5 +27,52 @@ You can use this link to narrow the results only to those posts which relate to 
 # Usage
 This section is covers how to use easyEws. The following functions are available to call:
 
-* easyEws.sendPlainTextEmailWithAttachment
+* [sendPlainTextEmailWithAttachment](#sendPlainTextEmailWithAttachment)(subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback, debugCallback)
+* [getMailItemMimeContent](#getMailItemMimeContent)(mailItemId, successCallback, errorCallback, debugCallback)
+* [updateEwsHeader](#updateEwsHeader)(mailItemId, headerName, headerValue, successCallback, errorCallback, debugCallback)
+* [getFolderItemIds](#getFolderItemIds)(folderId, successCallback, errorCallback, debugCallback)
+* [getMailItem](#getMailItem)(itemId, successCallback, errorCallback, debugCallback) 
+* DO NOT USE! --> [expandGroup](#expandGroup)(group, successCallback, errorCallback, debugCallback)
+* [findConversationItems](#findConversationItems)(conversationId, successCallback, errorCallback, debugCallback)
+* [getSpecificHeader](#getSpecificHeader)(itemId, headerName, headerType, successCallback, errorCallback, debugCallback)
+* [getEwsHeaders](#getEwsHeaders)(itemId, successCallback, errorCallback, debugCallback)
+* [updateFolderProperty](#updateFolderProperty)(folderId, propName, propValue, successCallback, errorCallback, debugCallback)
+* [getFolderProperty](#getFolderProperty)(folderId, propName, successCallback, errorCallback, debugCallback)
+* [getFolderId](#getFolderId)(folderName, successCallback, errorCallback, debugCallback)
+
+### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
+This topic is TBD.
+
+### getMailItemMimeContent <a name="getMailItemMimeContent"></a>
+This topic is TBD.
+
+### updateEwsHeader <a name="updateEwsHeader"></a>
+This topic is TBD.
+
+### getFolderItemIds <a name="getFolderItemIds"></a>
+This topic is TBD.
+
+### getMailItem <a name="getMailItem"></a>
+This topic is TBD.
+
+### expandGroup <a name="expandGroup"></a>
+This topic is TBD.
+
+### findConversationItems <a name="findConversationItems"></a>
+This topic is TBD.
+
+### getSpecificHeader <a name="getSpecificHeader"></a>
+This topic is TBD.
+
+### getEwsHeaders <a name="getEwsHeaders"></a>
+This topic is TBD.
+
+### updateFolderProperty <a name="updateFolderProperty"></a>
+This topic is TBD.
+
+### getFolderProperty <a name="getFolderProperty"></a>
+This topic is TBD.
+
+### getFolderId<a name="getFolderId"></a>
+This topic is TBD.
 
