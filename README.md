@@ -20,6 +20,7 @@ You can use this link to narrow the results only to those posts which relate to 
 
 * https://theofficecontext.com/?s=easyews
 * debugCallback - function(debug: string) - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned.   
+
 ![TWITTER](https://davecra.files.wordpress.com/2010/10/tlogo.png?w=20) You can also follow me on Twitter: [@davecra](http://twitter.com/davecra)
 
 ![LINKEDIN](https://davecra.files.wordpress.com/2014/02/inbug-60px-r.png?w=20) And also on LinkedIn: [davidcr](https://www.linkedin.com/in/davidcr/)
