@@ -1,0 +1,25 @@
+{
+  "name": "easyews",
+  "version": "1.0.6",
+  "description": "This library makes performing EWS operations from Outlook Mail Web Add-ins via JavaScript much easier.",
+  "main": "easyEws.js",
+  "scripts": {
+    "test": "easyEws"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davecra/easyEws.git"
+  },
+  "keywords": [
+    "EWS",
+    "outlook",
+    "officejs",
+    "makeEwsRequestAsync"
+  ],
+  "author": "David E. Craig",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/davecra/easyEws/issues"
+  },
+  "homepage": "https://github.com/davecra/easyEws#readme"
+}

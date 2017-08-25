@@ -1,0 +1,4 @@
+## Ignored files
+easyEws1*.js
+.gitattributes
+.npmignore
