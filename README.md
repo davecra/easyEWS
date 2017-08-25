@@ -39,6 +39,7 @@ This section is covers how to use easyEws. The following functions are available
 * [updateFolderProperty](#updateFolderProperty) - Updates a folder property. If the property does not exist, it will be created.
 * [getFolderProperty](#getFolderProperty) -  Gets a folder property
 * [getFolderId](#getFolderId) - Gets the folder id by the given name from the store
+* [moveItem](#moveItem) - Moves an item from one folder to another
 
 ### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
 This method will send a plain text message to a recipient with an attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
@@ -252,7 +253,23 @@ Here are the parameters for this method:
 * **folderName**: *string* - The name of the folder you want to get the ID for.
 * **successCallback**: *function(**result**: string)* - Returns the folder ID if completed successfully.
 * **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
-56
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
+
+##### Example #####
+Here is an example of how to use this method:
+
+```javascript
+Example is TBD.
+```
+
+### moveItem<a name="moveItem"></a>
+Moves an item to the specified MAPI folder in the Exchange store.
+
+Here are the paramters for this method:
+* **itemId**: *string* - The item ID for the message, appointment or meeting that is to be moved.
+* **folderID**: *string* The folder name or the folder ID of the MAPI folder where you want to move the item to.
+* **successCallback**: *function(**result**: string)* - the success callback. will return 'success' if the process completes successfully.
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
 * **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
 
 ##### Example #####

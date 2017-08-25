@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2017-08-15T01:36EST
+ * Date: 2017-08-25T11:19EST
  */
  /**
  * The global easyEws object 
