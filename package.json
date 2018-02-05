@@ -1,6 +1,6 @@
 {
   "name": "easyews",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "This library makes performing EWS operations from Outlook Mail Web Add-ins via JavaScript much easier.",
   "main": "easyEws.js",
   "scripts": {
