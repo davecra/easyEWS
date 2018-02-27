@@ -32,7 +32,7 @@ This section is covers how to use easyEws. The following functions are available
 * [updateEwsHeader](#updateEwsHeader) - Updates the headers in the mail item
 * [getFolderItemIds](#getFolderItemIds)- Returns a list of items in the folder
 * [getMailItem](#getMailItem) - Gets the item details for a specific item by ID
-* DO NOT USE! --> [expandGroup](#expandGroup) - The ExpandDL method is not supported
+* [expandGroup](#expandGroup) - Returns a list of members to an Exchange Distribution Group
 * [findConversationItems](#findConversationItems) - Find a given conversation by the ID
 * [getSpecificHeader](#getSpecificHeader) - Gets a specific Internet header for a spific item
 * [getEwsHeaders](#getEwsHeaders) - Gets Internet headers for a spific item
@@ -138,7 +138,7 @@ Example is TBD.
 ```
 
 ### expandGroup <a name="expandGroup"></a>
-**DO NOT USE**. This does not function in the current makeEwsRequestAsync() interface. As such, you cannot use this method. This is currently in the list for future possible use.
+(2/27/2018) This does not function in Exchange 2016 / On-Prem (TBD in CU9). 
 
 This method will take a group name and split it one level to constituent users and groups. It is not recursive, so if you need to split multiple groups within groups, you will need to call this function multiple times.
 
