@@ -31,7 +31,7 @@ function __nonInstanceEasyEwsClass() {
     /** @type {debugCallback} */
     var splitGroupDebugCallback;
     /** @type {number} */
-    var groupCount = 0;
+    var groupLevels = 0;
 
 /***********************************************************************************************
  ***********************************************************************************************
@@ -291,7 +291,7 @@ function __nonInstanceEasyEwsClass() {
         groups = [];
         users = [];
         processedGroups = [];
-        groupCount = 0;
+        groupLevels = 0;
         // add the current groups
         groups.push(groupList);
         // set callbacks
@@ -865,7 +865,7 @@ function __nonInstanceEasyEwsClass() {
     function splitGroupsRecursivelyAsync() {
         // if there are no more groups found, or we have recursively
         // found more than 10 levels of groups, then we stop
-        if(groups.length == 0 || groupCount > 100) { 
+        if(groups.length == 0 || groupLevels > 10) { 
             // if no groups stop
             splitGroupSuccessCallback(users); 
         } else {
@@ -881,15 +881,15 @@ function __nonInstanceEasyEwsClass() {
                      */
                     function(result, index) {
                         if(result.MailboxType() == "PublicDL" || 
-                           result.MailboxType() == "PrivateDL") {
+                           result.MailboxType() == "PrivateDL") { 
                             // add the group to the list of results as
                             // long as it does not already contain a group
                             // we have processed or a group that is on the
                             // stack to be processed
-                            if(processedGroups.indexOf(result.Address) < 0 && 
-                               groups.indexOf(result.Address) < 0) {
-                                groupCount++;
-                                groups.push(result.Address);
+                            if(processedGroups.indexOf(result.Address()) < 0 && 
+                               groups.indexOf(result.Address()) < 0) {
+                                groupLevels++;
+                                groups.push(result.Address());
                             }
                         } else {
                             // add the user to the list as long as they have
@@ -900,7 +900,7 @@ function __nonInstanceEasyEwsClass() {
                             for(var i=0;i < users.length; i++) {
                                 /** @type {MailboxUser} */
                                 var item = users[i];
-                                if(item.Address == result.Address) {
+                                if(item.Address() == result.Address()) {
                                     found = true;
                                     break;
                                 }
@@ -1059,7 +1059,7 @@ function MailItem(value) {
  *      </t:Mailbox>
  * @typedef {Object} MailboxUser
  * @property {string} Name Returns the name of the item
- * @property {string} Email Returns the email address of the item
+ * @property {string} Address Returns the email address of the item
  * @property {string} RoutingType Returns the type of address of the item
  * @property {string} MailboxType Returns is the item is a mailbox user or a PublicDL
  * @param {XMLDocument} value XML string from EWS request

@@ -11,6 +11,19 @@ To install this library, run the following command:
 npm -install easyews
 ```
 
+### Referencing
+easyEws comes with both a full (debug) version and a minified version. To access the debug version from node_modules (if your source is in the root of your project):
+
+```html
+<script type="text/javascript" src="node_modules/easyews/easyews.js"></script>
+```
+
+To access the minified version from node_modules (if your source is in the root of your project):
+
+```html
+<script type="text/javascript" src="node_modules/easyews/easyews.min.js"></script>
+```
+
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
 
@@ -33,6 +46,8 @@ This section is covers how to use easyEws. The following functions are available
 * [getFolderItemIds](#getFolderItemIds)- Returns a list of items in the folder
 * [getMailItem](#getMailItem) - Gets the item details for a specific item by ID
 * [expandGroup](#expandGroup) - Returns a list of members to an Exchange Distribution Group
+* [splitGroupsAsync](#splitGroupsAsync) - Returns a list of all users found in every group (and groups in groups, etc.)
+* [getAllRecipientsAsync](#getAllRecipientsAsync) - Returns lists of users and groups on the To/CC/BCC
 * [findConversationItems](#findConversationItems) - Find a given conversation by the ID
 * [getSpecificHeader](#getSpecificHeader) - Gets a specific Internet header for a spific item
 * [getEwsHeaders](#getEwsHeaders) - Gets Internet headers for a spific item
@@ -156,12 +171,48 @@ Here is an example of how to use this method:
 Example is TBD.
 ```
 
+### splitGroupsAsync <a name="splitGroupsAsync"></a>
+This method takes an array of email addresses (as strings) for Distribution Groups and makes recursive asynchronous calls to [expandGroup](#expandGroup) to return a list of unique users found inside each group, and even groups within groups (up to 100 groups total).
+
+NOTE: This function will automatically exit after 100 groups (including groups within groups) have been parsed. This is to prevent a possible hang when encountering circular groups.
+
+Here are the paramters for this method:
+* **groups**: *string[]* - an array of email addresses (or group names) for Distribution Lists you want to expand. 
+* **successCallback**: *function(**result**: MailBoxUser[])* - If successful will return an array of all unique MailBoxUser objects found within all groups (and groups within groups).
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
+56
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
+
+##### Example #####
+Here is an example of how to use this method:
+
+```javascript
+Example is TBD.
+```
+
+### getAllRecipientsAsync <a name="getAllRecipientsAsync"></a>
+This method accepts the current ComposeItem and then parse the To/CC/BCC lines and returns a list of unique users (as an array of MailBoxUser) and a unique list of groups (as an array of MailBoxUser). This function is useful in conjunction with the [splitGroupsAsync()](#splitGroupsAsync) method.
+
+Here are the parameters of the method:
+* **composeItem**: *Office.Types.ItemCompose* - the item currently being composed in the mail client. Uses this object to access the To/CC/BCC lines async.
+* **successCallback**: *function(**users**: MailBoxUser[], **groups**: MailBoxUser[])* - If successful will return a list of users (as an array of MailBoxUser) and a list of groups (as an array of MailBoxUser)
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
+56
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
+
+##### Example #####
+Here is an example of how to use this method:
+
+```javascript
+Example is TBD.
+```
+
 ### findConversationItems <a name="findConversationItems"></a>
 This method will return all the related itemID's in a specific conversation. If you need to find a specific item you can then use the ID's to make the [getMailItem()](#getMailItem) method.
 
 Here are the paramaters for this method:
 * **conversationId**: *string* - the conversation ID for which you want to retrieve all the related items
-* successCallback
+* **successCallback**: *function(**items**: string[])* - returns an array of conversation ID's found
 * **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
 56
 * **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
