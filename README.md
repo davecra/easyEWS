@@ -376,11 +376,12 @@ async function run() {
                 var info  = "<br/>DISPLAY NAME: " + recips[0].displayName + "<br/>" +
                             "EMAIL_ADDRESS: " + recips[0].emailAddress + "<br/>" +
                             "RECIPIENT_TYPE: " + recips[0].recipientType;
-                easyEws.resolveRecipient(recips[0].displayName, function(result) {
+                easyEws.resolveRecipient(recips[0].emailAddress, function(result) {
                     if(result == null || result.length == 0) {
                         info += "<br/>UNRESOLVED</br>";
                     } else {
                         info += "<br/>RESOLVED: " + result[0].MailBoxType;
+                        info += "<br/>RESOLVED EMAIL: " + result[0].EmailAddress;
                     }
                     // write tot he form
                     $("#recipientResult").html(info);
