@@ -24,6 +24,18 @@ To access the minified version from node_modules (if your source is in the root 
 <script type="text/javascript" src="node_modules/easyews/easyews.min.js"></script>
 ```
 
+easyEws can also be accessed from the following CDN: https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.js
+
+```html
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.js"></script>
+```
+
+or, the minified version:
+
+```html
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.min.js"></script>
+```
+
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
 
@@ -55,6 +67,7 @@ This section is covers how to use easyEws. The following functions are available
 * [getFolderProperty](#getFolderProperty) -  Gets a folder property
 * [getFolderId](#getFolderId) - Gets the folder id by the given name from the store
 * [moveItem](#moveItem) - Moves an item from one folder to another
+* [resolveRecipient](#resolveRecipient) - Resolves a recipient
 
 ### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
 This method will send a plain text message to a recipient with an attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
@@ -320,6 +333,26 @@ Here are the paramters for this method:
 * **itemId**: *string* - The item ID for the message, appointment or meeting that is to be moved.
 * **folderID**: *string* The folder name or the folder ID of the MAPI folder where you want to move the item to.
 * **successCallback**: *function(**result**: string)* - the success callback. will return 'success' if the process completes successfully.
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
+
+##### Example #####
+Here is an example of how to use this method:
+
+```javascript
+Example is TBD.
+```
+
+### resolveRecipient<a name="resolveRecipient"></a>
+Resolves a recipient.
+
+Here are the parameters foe this method:
+* **recipient**: *string* - The recipient name or email
+* **successCallback**: *function(**result**: ResolveNamesType[])* - the success callback. Will return an array of resolved names. The returned type is defined as:
+         * @param {string} name
+         * @param {string} emailAddress
+         * @param {string} routingType
+         * @param {string} mailboxType
 * **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
 * **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
 
