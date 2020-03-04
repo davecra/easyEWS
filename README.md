@@ -360,5 +360,37 @@ Here are the parameters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+async function run() {
+    var msg = Office.context.mailbox.item;
+    msg.to.getAsync(function(asyncResult) {
+        if(asyncResult.status == Office.AsyncResultStatus.Failed) {
+            $("#recipientResult").text(asyncResult.error);
+        } else {
+            /** @type {Office.EmailAddressDetails[]} */
+            var recips = asyncResult.value;
+            // are there any recipients at all
+            if(recips == null || recips.length == 0) {
+                $("#recipientResult").html("NO RECIPIENTS");
+            } else {
+                /** @type {string} */
+                var info  = "<br/>DISPLAY NAME: " + recips[0].displayName + "<br/>" +
+                            "EMAIL_ADDRESS: " + recips[0].emailAddress + "<br/>" +
+                            "RECIPIENT_TYPE: " + recips[0].recipientType;
+                easyEws.resolveRecipient(recips[0].displayName, function(result) {
+                    if(result == null || result.length == 0) {
+                        info += "<br/>UNRESOLVED</br>";
+                    } else {
+                        info += "<br/>RESOLVED: " + result[0].MailBoxType;
+                    }
+                    // write tot he form
+                    $("#recipientResult").html(info);
+                }, function(error) {
+                    $("#recipientResult").text(error);
+                }, function(debug) {
+                    $("#debugResult").text(debug)
+                });
+            }
+        }
+    });
+}
 ```
