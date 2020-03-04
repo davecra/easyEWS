@@ -346,7 +346,7 @@ Example is TBD.
 ### resolveRecipient<a name="resolveRecipient"></a>
 Resolves a recipient.
 
-Here are the parameters foe this method:
+Here are the parameters for this method:
 * **recipient**: *string* - The recipient name or email
 * **successCallback**: *function(**result**: ResolveNamesType[])* - the success callback. Will return an array of resolved names. The returned type is defined as:
          * @param {string} name
