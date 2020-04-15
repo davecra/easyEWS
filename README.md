@@ -346,7 +346,7 @@ Example is TBD.
 ### resolveRecipient<a name="resolveRecipient"></a>
 Resolves a recipient.
 
-Here are the parameters foe this method:
+Here are the parameters for this method:
 * **recipient**: *string* - The recipient name or email
 * **successCallback**: *function(**result**: ResolveNamesType[])* - the success callback. Will return an array of resolved names. The returned type is defined as:
          * @param {string} name
@@ -360,5 +360,38 @@ Here are the parameters foe this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+async function run() {
+    var msg = Office.context.mailbox.item;
+    msg.to.getAsync(function(asyncResult) {
+        if(asyncResult.status == Office.AsyncResultStatus.Failed) {
+            $("#recipientResult").text(asyncResult.error);
+        } else {
+            /** @type {Office.EmailAddressDetails[]} */
+            var recips = asyncResult.value;
+            // are there any recipients at all
+            if(recips == null || recips.length == 0) {
+                $("#recipientResult").html("NO RECIPIENTS");
+            } else {
+                /** @type {string} */
+                var info  = "<br/>DISPLAY NAME: " + recips[0].displayName + "<br/>" +
+                            "EMAIL_ADDRESS: " + recips[0].emailAddress + "<br/>" +
+                            "RECIPIENT_TYPE: " + recips[0].recipientType;
+                easyEws.resolveRecipient(recips[0].emailAddress, function(result) {
+                    if(result == null || result.length == 0) {
+                        info += "<br/>UNRESOLVED</br>";
+                    } else {
+                        info += "<br/>RESOLVED: " + result[0].MailBoxType;
+                        info += "<br/>RESOLVED EMAIL: " + result[0].EmailAddress;
+                    }
+                    // write tot he form
+                    $("#recipientResult").html(info);
+                }, function(error) {
+                    $("#recipientResult").text(error);
+                }, function(debug) {
+                    $("#debugResult").text(debug)
+                });
+            }
+        }
+    });
+}
 ```
