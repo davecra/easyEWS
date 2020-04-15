@@ -85,10 +85,10 @@ function __nonInstanceEasyEwsClass() {
                     //  <t:MailboxType>Contact</t:MailboxType>
                     // </t:Mailbox>
                     $.each(nodes, function (index, value) {
-                        var name = getNodes(value, "t:Name")[0].innerHTML;
-                        var email = getNodes(value, "t:EmailAddress")[0].innerHTML;
-                        var route = getNodes(value, "t:RoutingType")[0].innerHTML;
-                        var box = getNodes(value, "t:MailboxType")[0].innerHTML;
+                        var name = getNodes(value, "t:Name")[0].textContent;
+                        var email = getNodes(value, "t:EmailAddress")[0].textContent;
+                        var route = getNodes(value, "t:RoutingType")[0].textContent;
+                        var box = getNodes(value, "t:MailboxType")[0].textContent;
                         var obj = new ResolveNamesType(name, email, route, box);
                         returnArray.push(obj);
                     });
