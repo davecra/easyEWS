@@ -1,12 +1,12 @@
 /*!
- * easyEWS JavaScript Library v1.0.12
+ * easyEWS JavaScript Library v1.0.12a
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2020-04-15T17:28EST
+ * Date: 2020-04-15T18:28EST
  */
  /**
  * The global easyEws object 
