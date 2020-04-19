@@ -181,7 +181,52 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+/**
+ * Breaks upp all the groups on the to/cc/bcc lines of the message
+ * and reports the total number of member affected.
+ * @param {Office.AddinCommands.Event} event 
+ */
+function breakGroups(event) {
+  $(document).ready(function () {
+    var mailItem = Office.context.mailbox.item;
+    // Get all the recipients for the composed mail item
+    easyEws.getAllRecipientsAsync(mailItem, 
+    /**
+     * Returns a groups of users[] and groups[] we only
+     * care about the groups here and will expand them
+     * @param {Office.EmailAddressDetails[]} users 
+     * @param {Office.EmailAddressDetails[]} groups 
+     */
+    function(users,groups) {
+      var allMembers = [];
+      // loop through all the groups found
+      for(var i=0;i<groups.length;i++) {
+        var groupEmail = groups[i].emailAddress;
+        easyEws.expandGroup(groupEmail, function(members) {
+          console.log("Split group " + groupEmail + " with " + members.length + " member(s)");
+          $.each(members, function(index, item) { allMembers.push(item); });
+          // on the last item, notify the user
+          if(i >= groups.length) {
+            // NOTE: using OfficeJS.dialogs (https://github.com/davecra/officejs.dialogs)
+            Alert.Show("All groups have been split.\nThere are " + allMembers.length + " members.", 
+            function() {
+              // button event complete
+              event.completed();
+            });
+          }
+        }, function(error) {
+          console.log("ERROR: " + error.description);
+          event.completed();
+        }, function(debug) {
+          // DEBUG OUTPUT:
+          // displays the SOAP to EWS
+          // displays the SOAP back from EWS
+          console.log(debug);
+        });
+      }
+    });
+  });
+}
 ```
 
 ### splitGroupsAsync <a name="splitGroupsAsync"></a>
@@ -200,7 +245,52 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+/**
+ * Breaks upp all the groups on the to/cc/bcc lines of the message
+ * and reports the total number of member affected.
+ * @param {Office.AddinCommands.Event} event 
+ */
+function breakGroups(event) {
+  $(document).ready(function () {
+    var mailItem = Office.context.mailbox.item;
+    // Get all the recipients for the composed mail item
+    easyEws.getAllRecipientsAsync(mailItem, 
+    /**
+     * Returns a groups of users[] and groups[] we only
+     * care about the groups here and will expand them
+     * @param {Office.EmailAddressDetails[]} users 
+     * @param {Office.EmailAddressDetails[]} groups 
+     */
+    function(users,groups) {
+      /** @type {string[]} */
+      var groupList = [];
+      $.each(groups, function(index, item) { groupList.push(item.emailAddress); })
+      easyEws.splitGroupsAsync(groupList, 
+      /**
+       * Success callback from splitGroupAsync, returns an array
+       * of all the users mailboxes found in an array
+       * @param {MailboxUser[]} members 
+       */
+      function(members) {
+        console.log("Split " + groups.length + " groups containing " + members.length + " member(s)");
+        // NOTE: using OfficeJS.dialogs (https://github.com/davecra/officejs.dialogs)
+        Alert.Show("All groups have been split.\nThere are " + members.length + " members.", 
+        function() {
+          // button event complete
+          event.completed();
+        });
+      }, function(error) {
+        console.log("ERROR: " + error.description);
+        event.completed();
+      }, function(debug) {
+        // DEBUG OUTPUT:
+        // displays the SOAP to EWS
+        // displays the SOAP back from EWS
+        console.log(debug);
+      });
+    });
+  });
+}
 ```
 
 ### getAllRecipientsAsync <a name="getAllRecipientsAsync"></a>
@@ -217,7 +307,29 @@ Here are the parameters of the method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+/**
+ * Returns the total number of users on the to/cc/bcc lines
+ * @param {Office.AddinCommands.Event} event 
+ */
+function getAllUsers(event) {
+  $(document).ready(function () {
+    var mailItem = Office.context.mailbox.item;
+    // Get all the recipients for the composed mail item
+    easyEws.getAllRecipientsAsync(mailItem, 
+    /**
+     * Returns a groups of users[] and groups[] we only
+     * care about the groups here and will expand them
+     * @param {Office.EmailAddressDetails[]} users 
+     * @param {Office.EmailAddressDetails[]} groups 
+     */
+    function(users,groups) {
+      Alert.Show("There are " + users.length + " user(s) and " + groups.length + " group(s) being directly address.", 
+      function() {
+        event.completed();
+      });
+    });
+  });
+}
 ```
 
 ### findConversationItems <a name="findConversationItems"></a>
