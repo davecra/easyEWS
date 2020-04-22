@@ -347,7 +347,20 @@ Here are the paramaters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+var conversationId = Office.context.mailbox.item.conversationId;
+easyEws.findConversationItems(conversationId, function (itemArray) {
+	if (itemArray === null || itemArray.length === 0) {
+		console.log("No_coversation_items_found");
+		return;
+	}
+	// we will grab the first item as the newest
+	var mostRecentId = itemArray[0];
+	console.log("Most recent conversation is: " + mostRecentId);
+	}, function (error) {
+		console.log(error);
+	}, function (debug) {
+		console.log(debug);
+	});
 ```
 
 ### getSpecificHeader <a name="getSpecificHeader"></a>
@@ -366,7 +379,17 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+easyEws.getSpecificHeader(id, "x-myheader", "String", function (result) {
+	if (result === null || result === "") {
+		console.log("not_found");
+	} else {
+		console.log("Result: " + result);
+	}
+}, function (error) {
+	console.log(error);
+}, function (debug) {
+	console.log(debug);
+});
 ```
 
 ### getEwsHeaders <a name="getEwsHeaders"></a>
@@ -383,7 +406,21 @@ Here are the parameters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+easyEws.getEwsHeaders(id, function (headersDictionary) {
+	var classificationResult = "";
+	headersDictionary.forEach(function (key, value) {
+		if (key.toLowerCase().startsWith("x-myheader")) {
+			// success
+			completeCallback(value);
+			return;
+		}
+	});
+	completeCallback("no_header_found");
+}, function (error) {
+	console.log("Failed to get EWS Headers.\n" + error);
+}, function (debug) {
+	console.log("getEwsHeaders: " + debug);
+});
 ```
 
 ### updateFolderProperty <a name="updateFolderProperty"></a>
