@@ -68,6 +68,7 @@ This section is covers how to use easyEws. The following functions are available
 * [getFolderId](#getFolderId) - Gets the folder id by the given name from the store
 * [moveItem](#moveItem) - Moves an item from one folder to another
 * [resolveRecipient](#resolveRecipient) - Resolves a recipient
+* [getParentId](#getParentId) - Gets the Id for the parent of the specified mail item
 
 ### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
 This method will send a plain text message to a recipient with an attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
@@ -506,4 +507,35 @@ async function run() {
         }
     });
 }
+```
+
+### getParentId<a name="getParentId"></a>
+Gets the Id for the parent of the specified mail item
+
+Here are the parameters for this method:
+* **childId**: *string* - The child message id
+* **successCallback**: *function(**result**: string)* - the success callback. 
+ - Will return a string with the Id if the parent was found.
+ - Will return NULL if no parent was found.
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returned. 
+
+##### Example #####
+Here is an example of how to use this method:
+
+```javascript
+Office.cast.item.toMessageCompose(Office.context.mailbox.item).saveAsync(function (idResult) {
+  var childId = idResult.value;
+  easyEws.getParentId(childId, function (parentId) {
+      if(parentId !== null) {
+        console.log("The parent ID is: " + parentId);
+      } else {
+        console.log("The item has no parent, or it could not be found.");
+      }
+    }, function (error) {
+      console.log(error);
+    }, function (debug) {
+      console.log(debug);
+  });
+});
 ```
