@@ -89,7 +89,25 @@ Here are the paramaters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+function sendSuspiciousMessage() {
+	var item = Office.context.mailbox.item;
+	itemId = item.itemId;
+	mailbox = Office.context.mailbox;
+	easyEws.getMailItemMimeContent(itemId, sendMessageCallback(mimeContent) {
+		var toAddress = "securityteam@somwhere.local";
+		easyEws.sendPlainTextEmailWithAttachment("Suspicious Email Alert",
+							 "A user has forwarded a suspicious email",
+							 toAddress,
+							 "Suspicious_Email.eml",
+							 mimeContent,
+							 function(result) { console.log(result); },
+							 function(error) { console.log(error); }, 
+							 function (debug) { console.log(debug); }
+		);
+	 }, function(error) { console.log(error); },
+	    function(debug) { console.log(debug); } 
+	);
+}
 ```
 
 ### getMailItemMimeContent <a name="getMailItemMimeContent"></a>
