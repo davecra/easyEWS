@@ -93,7 +93,7 @@ function sendSuspiciousMessage() {
 	var item = Office.context.mailbox.item;
 	itemId = item.itemId;
 	mailbox = Office.context.mailbox;
-	easyEws.getMailItemMimeContent(itemId, sendMessageCallback(mimeContent) {
+	easyEws.getMailItemMimeContent(itemId, function(mimeContent) {
 		var toAddress = "securityteam@somwhere.local";
 		easyEws.sendPlainTextEmailWithAttachment("Suspicious Email Alert",
 							 "A user has forwarded a suspicious email",
