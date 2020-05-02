@@ -67,11 +67,11 @@ function __nonInstanceEasyEwsClass() {
         soap = getSoapHeader(soap);
         // make the EWS call
         asyncEws(soap, function (getItemXmlDoc) {
-        /**@type {string} */
+            /**@type {string} */
             var internetMessageId = "";
             try {
                 internetMessageId = getNodes(getItemXmlDoc, "t:InReplyTo")[0].textContent;
-            } catch {
+            } catch (error) {
                 // returns null if there is no InReplyTo field which likely means
                 // that this item is not a reply or forward but a new item
                 successCallback(null);
