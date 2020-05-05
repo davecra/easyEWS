@@ -79,8 +79,8 @@ Here are the paramaters for this method:
 * **body**: *string* - this is the body of the message to be sent. It must be in plain text. HTML is NOT supported. 
 * **recipients**: *string[]* - this is an array of email addresses
 * **attachments**: *object[]* - array of objects of form {name: string, mime: BASE64 string} to be attached. Pass [{}] if no attachments.
-  **attachments[].name**: *string* - the name of the attachment
-  **attachments[].mime**: *string* - (base64 string) mime content for the attachment
+	* **attachments[].name**: *string* - the name of the attachment
+	* **attachments[].mime**: *string* - (base64 string) mime content for the attachment
 * **folderid**: *string* - distinguished folder id of folder to put the sent item in
 * **successCallback**: *function(**result**: string)* - Returns "success" if completed successfully.
 * **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
