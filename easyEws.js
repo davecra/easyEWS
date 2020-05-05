@@ -1,12 +1,13 @@
 /*!
- * easyEWS JavaScript Library v1.0.14
+ * easyEWS JavaScript Library v1.0.15
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
+ * Portions Copyright (c) 2020 Vijay Samtani
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2020-04-22T13:33EST
+ * Date: 2020-05-01T10:44UTC
  */
  /**
  * The global easyEws object 
@@ -189,39 +190,60 @@ function __nonInstanceEasyEwsClass() {
     }
 
     /**
-     * PUBLIC: creates a new emails message with a single attachment and sends it
-     * 
-     * @param {string} subject - The subject for the message to be sent
-     * @param {string} body - The body of the message to be sent
-     * @param {string} to - The email address of the recipient
-     * @param {string} attachmentName - Name of the attachment
-     * @param {string} attachmentMime - MIME content in Base64 for the attachment
-     * @param {successCallback} successCallback - Callback with 'success' if compelted successfully - function(string) { }
-     * @param {errorCallback} errorCallback - Error handler callback - function(string) { }
-     * @param {debugCallback} debugCallback - Debug handler returns raw XML - function(string) { }
-     */
-    this.sendPlainTextEmailWithAttachment = function (subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback, debugCallback) {
-        /** @type {string} */
+    * PUBLIC: creates and sends a new email message with 1+ recipients, 0+ attachments. Can specify where to save copy.
+    * 
+    * @param {Object} p - The parameters object
+    * @param {string} p.body - The body of the message to be sent
+    * @param {string[]} p.recipients[] - Email address(es) of the recipient(s) as an Array of strings eg ["a@b.com", "c@d.com"]
+    * @param {Object[]} p.attachments - array of objects of form {name: string, mime: BASE64 string} to be attached. Pass [{}] if no attachments.
+    * @param {string} p.attachments[].name - Name of the attachment
+    * @param {string} p.attachments[].mime - MIME content in Base64 for the attachment
+    * @param {string} p.folderid - distinguished folder id of folder to put the sent item in 
+    * @param {successCallback} p.successCallback - Callback with 'success' if compelted successfully - function(string) { }
+    * @param {errorCallback} p.rrorCallback - Error handler callback - function(string) { }
+    * @param {debugCallback} p.debugCallback - Debug handler returns raw XML - function(string) { }
+    */
+    this.sendMailItem = function({subject, body, recipients = [""], attachments = [{name: "", mime:""}], folderid = "sentitems", successCallback, errorCallback, debugCallback}) {
+        //construct recipients
+        var xmlRecipients = ""; 
+        recipients.forEach( function(address) {
+            xmlRecipients += '<t:Mailbox><t:EmailAddress>' + address + '</t:EmailAddress></t:Mailbox>';
+        });
+        xmlRecipients = '<t:ToRecipients>' + xmlRecipients + '</t:ToRecipients>';
+
+        // construct attachments 
+        var xmlAttachments = "";
+        attachments.forEach( function (attachment) {
+            // Check if it's an empty object (ie, nothing to attach)   
+            if (Object.keys(attachment).length != 0) {
+                xmlAttachments += '<t:ItemAttachment>' +
+                '<t:Name>' + attachment.name + '</t:Name>' +
+                '<t:IsInline>false</t:IsInline>' +
+                '<t:Message>' +
+                '<t:MimeContent CharacterSet="UTF-8">' + attachment.mime + '</t:MimeContent>' +
+                '</t:Message>' +
+                '</t:ItemAttachment>';
+            };
+        });            
+        if (xmlAttachments != "") xmlAttachments = '<t:Attachments>' + xmlAttachments + '</t:Attachments>';
+    
+        // construct folder spec to save the sent email in 
+        var xmlSavedFolder = '<m:SavedItemFolderId><t:DistinguishedFolderId Id="' + folderid + '" /></m:SavedItemFolderId>';
+
+        // assemble the soap request
         var soap = '<m:CreateItem MessageDisposition="SendAndSaveCopy">' +
+                        xmlSavedFolder +
                     '    <m:Items>' +
                     '        <t:Message>' +
                     '            <t:Subject>' + subject + '</t:Subject>' +
                     '            <t:Body BodyType="Text">' + body + '</t:Body>' +
-                    '            <t:Attachments>' +
-                    '                <t:ItemAttachment>' +
-                    '                    <t:Name>' + attachmentName + '</t:Name>' +
-                    '                    <t:IsInline>false</t:IsInline>' +
-                    '                    <t:Message>' +
-                    '                        <t:MimeContent CharacterSet="UTF-8">' + attachmentMime + '</t:MimeContent>' +
-                    '                    </t:Message>' +
-                    '                </t:ItemAttachment>' +
-                    '            </t:Attachments>' +
-                    '            <t:ToRecipients><t:Mailbox><t:EmailAddress>' + to + '</t:EmailAddress></t:Mailbox></t:ToRecipients>' +
+                                    xmlAttachments +
+                                    xmlRecipients +
                     '        </t:Message>' +
                     '    </m:Items>' +
                     '</m:CreateItem>';
-
         soap = getSoapHeader(soap);
+ 
         // make the EWS call 
         asyncEws(soap, function (xmlDoc) {
             // Get the required response, and if it's NoError then all has succeeded, so tell the user.
@@ -240,12 +262,34 @@ function __nonInstanceEasyEwsClass() {
             }
         }, function (errorDetails) {
             if (errorCallback != null)
-                errorCallback(errorDetails);
+                  errorCallback(errorDetails);
         }, function (debug) {
             if (debugCallback != null)
-                debugCallback(debug);
+                  debugCallback(debug);
         });
-    };
+    };               
+
+
+    /**
+     * PUBLIC: creates a new emails message with a single attachment and sends it
+     * 
+     * @param {string} subject - The subject for the message to be sent
+     * @param {string} body - The body of the message to be sent
+     * @param {string} to - The email address of the recipient
+     * @param {string} attachmentName - Name of the attachment
+     * @param {string} attachmentMime - MIME content in Base64 for the attachment
+     * @param {successCallback} successCallback - Callback with 'success' if compelted successfully - function(string) { }
+     * @param {errorCallback} errorCallback - Error handler callback - function(string) { }
+     * @param {debugCallback} debugCallback - Debug handler returns raw XML - function(string) { }
+     */
+    this.sendPlainTextEmailWithAttachment = function (subject, body, to, attachmentName, attachmentMime, successCallback, errorCallback, debugCallback) {
+        /** @type {string} */
+        var toArray = new Array(to);
+        var attachmentObject = new Object({name: attachmentName, mime: attachmentMime});
+        var attachmentArray = new Array(attachmentObject);
+
+        this.sendMailItem(subject, body, toArray, attachmentArray, "sentitems", successCallback, errorCallback, debugCallback);
+     };
     /**
      * PUBLIC: gets the mail item as raw MIME data
      * 
