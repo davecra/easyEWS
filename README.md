@@ -52,6 +52,7 @@ You can use this link to narrow the results only to those posts which relate to 
 # Usage
 This section is covers how to use easyEws. The following functions are available to call:
 
+* [sendMailItem](#sendMailItem) - creates an email to multiple recipients, with or without attachments and sends it
 * [sendPlainTextEmailWithAttachment](#sendPlainTextEmailWithAttachment) - creates a new emails message with a single attachment and sends it
 * [getMailItemMimeContent](#getMailItemMimeContent)- gets the mail item as raw MIME data
 * [updateEwsHeader](#updateEwsHeader) - Updates the headers in the mail item
@@ -70,10 +71,30 @@ This section is covers how to use easyEws. The following functions are available
 * [resolveRecipient](#resolveRecipient) - Resolves a recipient
 * [getParentId](#getParentId) - Gets the Id for the parent of the specified mail item
 
+### sendMailItem <a name="sendMailItem"></a>
+This method will send a plain text message to multiple recipients with any number of attachments. 
+
+Here are the paramaters for this method:
+* **subject**: *string* - this is the subject for the email to be set
+* **body**: *string* - this is the body of the message to be sent. It must be in plain text. HTML is NOT supported. 
+* **recipients**: *string[]* - this is an array of email addresses
+* **attachments**: *object[]* - array of objects of form {name: string, mime: BASE64 string} to be attached. Pass [{}] if no attachments.
+  **attachments[].name**: *string* - the name of the attachment
+  **attachments[].mime**: *string* - (base64 string) mime content for the attachment
+* **folderid**: *string* - distinguished folder id of folder to put the sent item in
+* **successCallback**: *function(**result**: string)* - Returns "success" if completed successfully.
+* **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
+* **debugCallback**: *function(**debug**: string)* - Contains a detailed XML output with the original xml sent, the response from the server in xml, and any status messages or error objects returne
+
+##### Example #####
+Here is an example of how to use this method
+
+```javascript
+Example is TBD.
+```
+
 ### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
 This method will send a plain text message to a recipient with an attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
-
-**NOTE**: If additional options are needed, different types of send requests, please contact me.
 
 Here are the paramaters for this method:
 * **subject**: *string* - this is the subject for the email to be set
