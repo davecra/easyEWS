@@ -26,7 +26,7 @@ To access the minified version from node_modules (if your source is in the root 
 <script type="text/javascript" src="node_modules/easyews/easyews.min.js"></script>
 ```
 
-easyEws can also be accessed from the following CDN: https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.js
+easyEws can also be accessed from the following CDN: https://cdn.jsdelivr.net/npm/easyews/easyEws.js
 
 ```html
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/easyews/easyEws.js"></script>
