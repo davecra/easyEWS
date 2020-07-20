@@ -2,6 +2,8 @@
 # Introduction
 This library makes performing EWS operations from Outlook Mail Web Add-ins via JavaScript much easier. EWS is quite difficult to perform from JavaScript because you have to format a specific SOAP message in order to submit the request using [makeEwsRequestAsync()](https://docs.microsoft.com/en-us/outlook/add-ins/web-services?product=outlook). However, this is complicated by the fact you then get a SOAP message back that you then have to parse in order to get your result (or error). This library limits your need to call makeEwsRequestAsync() by encapsulating the call in easy to use functions.
 
+**NOTE**: If you encounter any problems with this library, please submit an issue: https://github.com/davecra/easyEWS/issues.
+
 **NOTE:** Microsoft official guidance at this point is to no longer use EWS, but rather to use the REST API's. Some of this functionality (as of this writing: 8/1/2017), is available through REST and some is not. However, to get more informaiton, please see the following link:https://docs.microsoft.com/en-us/outlook/add-ins/use-rest-api
 
 ### Installation
@@ -24,17 +26,28 @@ To access the minified version from node_modules (if your source is in the root 
 <script type="text/javascript" src="node_modules/easyews/easyews.min.js"></script>
 ```
 
-easyEws can also be accessed from the following CDN: https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.js
+easyEws can also be accessed from the following CDN: https://cdn.jsdelivr.net/npm/easyews/easyEws.js
 
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/easyews/easyEws.js"></script>
 ```
 
 or, the minified version:
 
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/davecra/easyEws/easyEws.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/easyews/easyEws.min.js"></script>
 ```
+
+**NOTE**: This uses the CDN published through NPM. In the past this pointed to the one on GitHub, but I have had versioning issues where JSDelivr does not update for serveral days or at all with GitHub updates. However, the NPM CDN pointer seems to work much better.
+
+**NOTE**: If you need to reference a spcific version of EWS, every version is kept and accessible via version number. The following table contains the most recent versions:
+
+| Version | Url                                                     | Minified                                                     |
+|:-------:|:-------------------------------------------------------:|:------------------------------------------------------------:|
+|v1.0.14  | https://cdn.jsdelivr.net/npm/easyews@1.0.14/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.14/easyEws.min.js   |
+|v1.0.15  | https://cdn.jsdelivr.net/npm/easyews@1.0.15/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.15/easyEws.min.js   |
+|v1.0.16  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.min.js   |
+|v1.0.17  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.min.js   |
 
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
