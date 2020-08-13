@@ -48,6 +48,7 @@ or, the minified version:
 |v1.0.15  | https://cdn.jsdelivr.net/npm/easyews@1.0.15/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.15/easyEws.min.js   |
 |v1.0.16  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.min.js   |
 |v1.0.17  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.min.js   |
+|v1.0.18  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.min.js   |
 
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
@@ -560,7 +561,15 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+    // moves the selected item in a Read add-in to 
+    // the deleted items folder...
+    var item = Office.context.mailbox.item;
+    var itemId = item.itemId;
+    easyEws.moveItem(itemId, "deleteditems", function() {
+      console.log("success");
+    }, function(error) {
+      console.log(error);
+    });
 ```
 
 ### resolveRecipient<a name="resolveRecipient"></a>
