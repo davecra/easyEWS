@@ -49,6 +49,7 @@ or, the minified version:
 |v1.0.16  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.16/easyEws.min.js   |
 |v1.0.17  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.min.js   |
 |v1.0.18  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.min.js   |
+|v1.0.19  | https://cdn.jsdelivr.net/npm/easyews@1.0.19/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.19/easyEws.min.js   |
 
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
