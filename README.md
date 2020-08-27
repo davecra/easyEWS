@@ -50,6 +50,7 @@ or, the minified version:
 |v1.0.17  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.17/easyEws.min.js   |
 |v1.0.18  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.18/easyEws.min.js   |
 |v1.0.19  | https://cdn.jsdelivr.net/npm/easyews@1.0.19/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.19/easyEws.min.js   |
+|v1.0.20  | https://cdn.jsdelivr.net/npm/easyews@1.0.20/easyEws.js  | https://cdn.jsdelivr.net/npm/easyews@1.0.20/easyEws.min.js   |
 
 ### Follow
 Please follow my blog for the latest developments on easyEws. You can find my blog here:
@@ -68,7 +69,7 @@ You can use this link to narrow the results only to those posts which relate to 
 This section is covers how to use easyEws. The following functions are available to call:
 
 * [sendMailItem](#sendMailItem) - creates an email to multiple recipients, with or without attachments and sends it
-* [sendPlainTextEmailWithAttachment](#sendPlainTextEmailWithAttachment) - creates a new emails message with a single attachment and sends it
+* [sendPlainTextEmailWithAttachment](#sendPlainTextEmailWithAttachment) - creates a new emails message with a single mail item attachment (mime) and sends it
 * [getMailItemMimeContent](#getMailItemMimeContent)- gets the mail item as raw MIME data
 * [updateEwsHeader](#updateEwsHeader) - Updates the headers in the mail item
 * [getFolderItemIds](#getFolderItemIds)- Returns a list of items in the folder
@@ -87,15 +88,20 @@ This section is covers how to use easyEws. The following functions are available
 * [getParentId](#getParentId) - Gets the Id for the parent of the specified mail item
 
 ### sendMailItem <a name="sendMailItem"></a>
-This method will send a plain text message to multiple recipients with any number of attachments. 
+This is a ALL PURPOSE method to send an HTML or Text message to multiple recipients on the TO line with any number of attachments of either Mail Item or File types. 
 
 Here are the paramaters for this method:
+* **p**: **SendMailFunctionObject** - this is an object that defines the message you want to send.
+
+Here are the parameters for the SendMailFunctionObject: 
 * **subject**: *string* - this is the subject for the email to be set
-* **body**: *string* - this is the body of the message to be sent. It must be in plain text. HTML is NOT supported. 
+* **body**: *string* - this is the body of the message to be sent. It can be plain text or HTML. You also do not need to escape your HTML, it will be escaped for you.
+* **bodytype**: *string* - this is either "html" or "text". The default is "text"
 * **recipients**: *string[]* - this is an array of email addresses
-* **attachments**: *object[]* - array of objects of form {name: string, mime: BASE64 string} to be attached. Pass [{}] if no attachments.
-	* **attachments[].name**: *string* - the name of the attachment
-	* **attachments[].mime**: *string* - (base64 string) mime content for the attachment
+* **attachments**: *SimpleAttachmentObject[]* - array of simple attachment objects. Pass [{}] if no attachments. Here is the SimpleAttachmentObject definition:
+	* **SimpleAttachmentObject.name**: *string* - the name of the attachment
+	* **SimpleAttachmentObject.mime**: *string* - (base64 string) mime content for the attachment
+	* **SimpleAttachmentObject.type**: *string* - this is either "file" (for any type of file) or "item" (for a mail item). Default is "file"
 * **folderid**: *string* - distinguished folder id of folder to put the sent item in
 * **successCallback**: *function(**result**: string)* - Returns "success" if completed successfully.
 * **errorCallback**: *function(**error**: string)* - If an error occurs a string with the resulting error will be returned. For more detail on the exact nature of the issue, you can refer to the debugCallback.
@@ -105,11 +111,26 @@ Here are the paramaters for this method:
 Here is an example of how to use this method
 
 ```javascript
-Example is TBD.
+  /**@type {SimpleAttachmentObject} */
+  var att = new SimpleAttachmentObject("welcome_packet.txt", "SGVsbG8gd29ybGQh", "file");
+  /**@type {SendMailFunctionObject} */
+  var p = new SendMailFunctionObject("Simple Subject", 
+                                     "<b>Welcome</b> and hello World!", 
+                                     "html", 
+                                      ["testing@contoso.com"], 
+                                      [att], "sentitems", 
+                                      function(result) {
+                                        console.log(result);
+                                      }, function(error) {
+                                        console.log(error);
+                                      }, function(debug) {
+                                        console.log(debug);
+                                      });
+  easyEws.sendMailItem(p);
 ```
 
 ### sendPlainTextEmailWithAttachment <a name="sendPlainTextEmailWithAttachment"></a>
-This method will send a plain text message to a recipient with an attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
+This method will send a plain text message to a recipient with a mime message item attachment. This function is very specific, but provides the essential foundation for creating an email with different options.
 
 Here are the paramaters for this method:
 * **subject**: *string* - this is the subject for the email to be set
@@ -126,23 +147,19 @@ Here is an example of how to use this method:
 
 ```javascript
 function sendSuspiciousMessage() {
-	var item = Office.context.mailbox.item;
-	itemId = item.itemId;
-	mailbox = Office.context.mailbox;
-	easyEws.getMailItemMimeContent(itemId, function(mimeContent) {
-		var toAddress = "securityteam@somwhere.local";
-		easyEws.sendPlainTextEmailWithAttachment("Suspicious Email Alert",
-							 "A user has forwarded a suspicious email",
-							 toAddress,
-							 "Suspicious_Email.eml",
-							 mimeContent,
-							 function(result) { console.log(result); },
-							 function(error) { console.log(error); }, 
-							 function (debug) { console.log(debug); }
-		);
-	 }, function(error) { console.log(error); },
-	    function(debug) { console.log(debug); } 
-	);
+    var item = Office.context.mailbox.item;
+    var itemId = item.itemId;
+    easyEws.getMailItemMimeContent(itemId, function(mimeContent) {
+    	var toAddress = "davidcr@outlook.com";
+    	easyEws.sendPlainTextEmailWithAttachment("Suspicious Email Alert",
+                                                 "A user has forwarded a suspicious email",
+                                                 toAddress,
+                                                 "Suspicious_Email.eml",
+                                                 mimeContent,
+                                                function(result) { console.log(result); },
+                                                function(error) { console.log(error); }, 
+                                                function (debug) { console.log(debug); });
+  }, function(error) { console.log(error); }, function(debug) { console.log(debug); });
 }
 ```
 
