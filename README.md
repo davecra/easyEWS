@@ -216,8 +216,8 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-// first, we have to save the item to the drafts folder, which willget us the 
-// Echange EWS_ID of the item. We then use that ID to update the header.
+// first, we have to save the item to the drafts folder, which will get us the 
+// Exchange EWS_ID of the item. We then use that ID to update the header.
 Office.context.mailbox.item.saveAsync(function (idResult) {
     	var id = idResult.value;
 	// now that we have the ID of the mail item, we update the header
