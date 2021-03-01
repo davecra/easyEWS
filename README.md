@@ -216,7 +216,13 @@ Here are the paramters for this method:
 Here is an example of how to use this method:
 
 ```javascript
-Example is TBD.
+easyEws.updateEwsHeader(id, "x-classification", value, false, function () {
+    console.log("x-header has been set.");
+}, function(error) {
+    console.log(error);
+}, function(debug) {
+    console.log(debug);
+});
 ```
 
 ### getFolderItemIds <a name="getFolderItemIds"></a>
