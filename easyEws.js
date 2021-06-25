@@ -933,7 +933,6 @@ function __nonInstanceEasyEwsClass() {
                    '    </ItemIds>' +
                    '</MoveItem>';
         soap = getSoapHeader(soap);
-        debugger;
         // make EWS callback
         asyncEws(soap, function (data) {
             if(successCallback != null)
