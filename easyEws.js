@@ -1,5 +1,5 @@
 /*!
- * easyEWS JavaScript Library v1.0.20
+ * easyEWS JavaScript Library v1.0.21
  * http://theofficecontext.com
  *
  * Copyright David E. Craig and other contributors
@@ -7,7 +7,7 @@
  * Released under the MIT license
  * https://tldrlegal.com/license/mit-license
  *
- * Date: 2020-08-27T15:44EST
+ * Date: 2022-01-25T19:42EST
  */
  /**
  * The global easyEws object 
@@ -933,7 +933,6 @@ function __nonInstanceEasyEwsClass() {
                    '    </ItemIds>' +
                    '</MoveItem>';
         soap = getSoapHeader(soap);
-        debugger;
         // make EWS callback
         asyncEws(soap, function (data) {
             if(successCallback != null)
