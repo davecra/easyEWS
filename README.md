@@ -1,6 +1,6 @@
 # ALERT
 
-This library will be deprcated after FEB 2025 because the getEwsTokenAsync() function that this library uses will be deprecated by Microaoft and will no longer work. For more information on the functionality, please see the note at the op of this Microaoft article:
+This library will be deprcated after FEB 2025 because the makeEwsRequestAsync() function that this library uses will be deprecated by Microsoft and will no longer work. For more information on the functionality, please see the note at the top of this Microsoft article:
 
 [Use Exchange Web Services (EWS) from an Outlook add-in](https://learn.microsoft.com/en-us/office/dev/add-ins/outlook/web-services?product=outlook)
 
