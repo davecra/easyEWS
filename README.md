@@ -1,3 +1,11 @@
+# ALERT
+
+This library will be deprcated after FEB 2025 because the getEwsTokenAsync() function that this library uses will be deprecated by Microaoft and will no longer work. For more information on the functionality, please see the note at the op of this Microaoft article:
+
+[Use Exchange Web Services (EWS) from an Outlook add-in](https://learn.microsoft.com/en-us/office/dev/add-ins/outlook/web-services?product=outlook)
+
+| Legacy Exchange tokens are deprecated. Starting February 2025, we'll begin to turn off legacy Exchange user identity and callback tokens for Exchange Online tenants. 
+
 ![LOGO](https://davecra.files.wordpress.com/2017/07/easyews.png?w=600)
 # Introduction
 This library makes performing EWS operations from Outlook Mail Web Add-ins via JavaScript much easier. EWS is quite difficult to perform from JavaScript because you have to format a specific SOAP message in order to submit the request using [makeEwsRequestAsync()](https://docs.microsoft.com/en-us/outlook/add-ins/web-services?product=outlook). However, this is complicated by the fact you then get a SOAP message back that you then have to parse in order to get your result (or error). This library limits your need to call makeEwsRequestAsync() by encapsulating the call in easy to use functions.
