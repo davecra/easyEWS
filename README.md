@@ -4,7 +4,7 @@ This library will be deprcated after FEB 2025 because the makeEwsRequestAsync() 
 
 [Use Exchange Web Services (EWS) from an Outlook add-in](https://learn.microsoft.com/en-us/office/dev/add-ins/outlook/web-services?product=outlook)
 
-| Legacy Exchange tokens are deprecated. Starting February 2025, we'll begin to turn off legacy Exchange user identity and callback tokens for Exchange Online tenants. 
+> Legacy Exchange tokens are deprecated. Starting February 2025, we'll begin to turn off legacy Exchange user identity and callback tokens for Exchange Online tenants. 
 
 ![LOGO](https://davecra.files.wordpress.com/2017/07/easyews.png?w=600)
 # Introduction
